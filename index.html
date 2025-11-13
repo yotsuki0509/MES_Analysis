@@ -22,7 +22,6 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 10vh;
             padding: 20px;
-            /* 調整 1: 基礎字體大小減小 */
             font-size: 1.0rem; /* 16px */
         }
         
@@ -39,25 +38,21 @@
         .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            /* 調整 2: 減少 padding */
             padding: 30px 30px; 
             text-align: center;
         }
         
         .header h1 {
-            /* 調整 3: 降低標題字體 */
             font-size: 2.5rem; 
             margin-bottom: 15px;
             font-weight: 800;
         }
 
         .header p {
-            /* 調整 4: 降低副標題字體 */
             font-size: 1.1rem; 
         }
         
         .upload-section {
-            /* 調整 5: 減少 padding */
             padding: 35px; 
             border-bottom: 2px solid #f0f0f0;
         }
@@ -65,7 +60,7 @@
         .upload-area {
             border: 3px dashed #667eea;
             border-radius: 15px;
-            padding: 40px; /* 調整 6: 減少 padding */
+            padding: 40px; 
             text-align: center;
             background: rgba(102, 126, 234, 0.05);
             transition: all 0.3s ease;
@@ -73,7 +68,6 @@
         }
 
         .upload-area h3 {
-            /* 調整 7: 降低字體 */
             font-size: 1.4rem; 
         }
         
@@ -92,7 +86,7 @@
         }
         
         .upload-icon {
-            font-size: 3rem; /* 降低圖標大小 */
+            font-size: 3rem; 
             margin-bottom: 15px;
             color: #667eea;
         }
@@ -111,7 +105,7 @@
 
         .path-input {
             width: 100%;
-            padding: 12px; /* 調整 8: 減少 padding */
+            padding: 12px; 
             border: 2px solid #ddd;
             border-radius: 8px;
             font-size: 1rem; 
@@ -135,7 +129,7 @@
         }
         
         .date-input {
-            padding: 10px 15px; /* 調整 9: 減少 padding */
+            padding: 10px 15px; 
             border: 2px solid #ddd;
             border-radius: 8px;
             font-size: 1rem; 
@@ -151,7 +145,7 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            padding: 12px 30px; /* 調整 10: 減少 padding */
+            padding: 12px 30px; 
             border-radius: 30px;
             font-size: 1rem; 
             font-weight: 600;
@@ -170,8 +164,7 @@
         }
         
         .dashboard {
-            /* 調整 11: 減少 padding */
-            padding: 40px 30px; 
+            padding: 35px 30px; 
             display: none;
         }
         
@@ -182,11 +175,10 @@
         .date-range-display {
             text-align: center;
             background: rgba(102, 126, 234, 0.1);
-            padding: 15px; /* 調整 12: 減少 padding */
+            padding: 15px; 
             border-radius: 12px;
             margin-bottom: 30px;
-            /* 調整 13: 降低字體大小 */
-            font-size: 1.4rem; 
+            font-size: 2.2rem; 
             font-weight: 700;
             color: #333;
         }
@@ -194,26 +186,24 @@
         .factory-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 30px; /* 減少間距 */
-            margin-bottom: 35px; 
+            gap: 30px; 
+            margin-bottom: 30px; 
         }
         
         .section-subtitle {
-            /* 調整 14: 降低字體大小 */
-            font-size: 2.0rem; 
+            font-size: 2.6rem; 
             font-weight: 700;
             color: #333;
-            margin-bottom: 25px;
+            margin-bottom: 22px;
             text-align: center;
             background: rgba(102, 126, 234, 0.1);
-            padding: 18px;
+            padding: 16px;
             border-radius: 15px;
         }
         
         .factory-card {
             background: white;
             border-radius: 16px;
-            /* 調整 15: 減少 padding */
             padding: 25px; 
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(102, 126, 234, 0.1);
@@ -225,10 +215,11 @@
         }
         
         .factory-title {
-            /* 調整 16: 降低字體大小 */
-            font-size: 1.6rem; 
+            /* 修正 4: 再次放大字體 */
+            font-size: 1.8rem; 
             font-weight: 700;
-            margin-bottom: 20px;
+            /* 修正 4: 壓縮邊距以換取空間 */
+            margin-bottom: 15px;
             text-align: center;
             padding: 15px;
             border-radius: 12px;
@@ -248,25 +239,27 @@
         }
         
         .stats-group-title {
-            /* 調整 17: 降低字體大小 */
-            font-size: 1.2rem; 
+            /* 修正 4: 再次放大字體 */
+            font-size: 1.4rem; 
             font-weight: 600;
             color: #4A90E2;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             padding-bottom: 6px;
             border-bottom: 3px solid #E3F2FD;
+            /* FIX 1: 垂直置中 (透過 padding/margin) 並置左 */
+            text-align: left; /* <-- CHANGED for left alignment */
+            padding-left: 10px; /* New: Add some left padding */
         }
         
         .stats-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 6px;
-            padding: 6px 0; /* 調整 18: 減少 padding */
+            margin-bottom: 4px;
+            padding: 4px 0; 
         }
         
         .stat-label, .stat-value {
-            /* 調整 19: 降低字體大小 */
-            font-size: 1.1rem; 
+            font-size: 1.3rem; 
         }
 
         .stat-label {
@@ -284,13 +277,14 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 30px;
-            margin-top: 35px;
-            padding-top: 25px;
+            /* 修正 4: 壓縮空間 */
+            margin-top: 25px;
+            padding-top: 15px;
             border-top: 2px solid #f0f0f0;
         }
 
         .detailed-chart-container {
-            height: 380px; /* 調整 20: 降低高度以節省空間 */
+            height: 380px; 
             padding: 15px;
             background: #f8f9ff;
             border-radius: 15px;
@@ -299,7 +293,6 @@
         
         .detailed-chart-title {
             text-align: center;
-            /* 調整 21: 降低字體大小 */
             font-size: 1.4rem; 
             font-weight: 700;
             color: #4A90E2;
@@ -311,24 +304,27 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 30px;
-            margin-top: 35px;
-            padding-top: 25px;
+            /* 修正 4: 壓縮空間 */
+            margin-top: 25px;
+            padding-top: 15px;
             border-top: 2px solid #f0f0f0;
         }
 
         .personnel-section {
-            padding: 15px;
+            /* 修正 4: 壓縮空間 */
+            padding: 12px;
             background: #f8f9ff;
             border-radius: 15px;
             border-left: 5px solid #4A90E2;
         }
         
         .personnel-title {
-            /* 調整 22: 降低字體大小 */
             font-size: 1.4rem; 
             font-weight: 700;
             color: #4A90E2;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
+            /* 修正 4: 水平置中 */
+            text-align: center;
         }
         
         .personnel-grid {
@@ -345,14 +341,13 @@
         
         .personnel-item {
             background: white;
-            padding: 10px 15px; /* 調整 23: 減少 padding */
-            margin-bottom: 6px;
+            padding: 8px 15px; 
+            margin-bottom: 5px;
             border-radius: 8px;
             display: flex;
             justify-content: space-between;
             border-left: 4px solid #E94B8C;
-            /* 調整 24: 降低字體 */
-            font-size: 1.05rem;
+            font-size: 1.25rem;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
         }
         
@@ -378,39 +373,42 @@
         .insights {
             background: white;
             border-radius: 16px;
-            /* 調整 25: 減少 padding */
             padding: 30px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(102, 126, 234, 0.1);
-            margin-top: 35px;
+            margin-top: 30px;
         }
         
         .insight-grid {
             display: grid;
-            /* 調整 26: 降低 minmax 確保雙欄佈局穩定 */
             grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); 
-            gap: 25px;
+            /* 修正 4: 壓縮空間 */
+            gap: 20px;
         }
         
         .insight-item {
             background: #f8f9ff;
-            border-left: 5px solid #667eea; /* 調整 27: 減少 border 寬度 */
-            padding: 20px;
+            border-left: 5px solid #667eea; 
+            /* 修正 4: 壓縮空間 */
+            padding: 15px;
             border-radius: 10px;
         }
         
         .insight-item h4 {
             color: #667eea;
-            margin-bottom: 15px;
-            /* 調整 28: 降低字體大小 */
-            font-size: 1.3rem; 
+            /* 修正 4: 壓縮空間 */
+            margin-bottom: 12px;
+            /* 修正 4: 再次放大字體 */
+            font-size: 1.5rem; 
             font-weight: 700;
+            /* FIX 1: 垂直置中 (透過 padding/margin) 並置左 */
+            text-align: left; /* <-- CHANGED for left alignment */
         }
         
         /* Insights Formatting */
         .insight-content-box {
             margin-top: 10px;
-            padding: 15px; /* 減少 padding */
+            padding: 12px 15px; 
             border-radius: 8px;
             background-color: white; 
             border: 1px solid #e0e7ff;
@@ -425,11 +423,9 @@
         .insight-content-box p,
         .insight-content-box li {
             color: #333;
-            /* 調整 29: 降低行高，關鍵在於節省垂直空間 */
-            line-height: 1.7; 
-            /* 調整 30: 降低字體 */
-            font-size: 1.05rem; 
-            margin-bottom: 10px;
+            line-height: 1.6; 
+            font-size: 1.28rem; 
+            margin-bottom: 8px;
             text-align: justify;
         }
         
@@ -441,7 +437,7 @@
             margin-top: 10px;
         }
         .insight-content-box li {
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             padding-left: 25px; 
             text-indent: -20px;
         }
@@ -479,7 +475,6 @@
         
         .field-status {
             display: grid;
-            /* 調整 31: 降低 minmax */
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
             gap: 15px;
             margin-top: 15px;
@@ -584,152 +579,159 @@
         </div>
         
         <div class="dashboard" id="dashboard">
-            <div id="pdfTitle" style="display:none; text-align:center; font-size: 24px; font-weight: bold; margin-bottom: 20px;">
-                MES現場報工異常分析
-            </div>
-            <div class="date-range-display" id="dateRangeDisplay"></div>
             <div style="text-align: right; margin-bottom: 20px;">
                 <button id="exportPdfBtn" class="analyze-btn">匯出報表為PDF</button>
             </div>
             
-            <!-- 成型部門 -->
-            <div id="moldingSection">
-                <div class="section-subtitle">🔧 成型部門現況</div>
-                <!-- 基礎統計卡片 -->
-                <div class="factory-row">
-                    <div class="factory-card">
-                        <div class="factory-title molding-title">宗瑋廠 - 成型部門</div>
-                        <div class="stats-section">
-                            <div class="stats-group-title">📊 班別統計</div>
-                            <div class="stats-row">
-                                <span class="stat-label">報工修正總次數</span>
-                                <span class="stat-value" id="zongweiMoldingTotal">0 次</span>
+            <!-- FIX 2: 新增一個 wrapper 來控制 PDF 匯出時的 DOM 捕獲範圍，避免排版錯位 -->
+            <div id="pdfContentWrapper">
+                <!-- 修正 2: 放大 PDF 標題字體 -->
+                <div id="pdfTitle" style="display:none; text-align:center; font-size: 40px; font-weight: bold; margin-bottom: 20px;">
+                    MES現場報工異常分析
+                </div>
+                <div class="date-range-display" id="dateRangeDisplay"></div>
+                
+                <!-- 成型部門 -->
+                <div id="moldingSection">
+                    <div class="section-subtitle">🔧 成型部門現況</div>
+                    <!-- 基礎統計卡片 -->
+                    <div class="factory-row">
+                        <div class="factory-card">
+                            <div class="factory-title molding-title">宗瑋廠 - 成型部門</div>
+                            <div class="stats-section">
+                                <div class="stats-group-title">📊 班別統計 (佔兩廠總異常百分比)</div>
+                                <div class="stats-row">
+                                    <span class="stat-label">報工修正總次數</span>
+                                    <span class="stat-value" id="zongweiMoldingTotal">0 次</span>
+                                </div>
+                                <div class="stats-row">
+                                    <span class="stat-label">日班發生次數</span>
+                                    <span class="stat-value" id="zongweiMoldingDay">0 次 (0%)</span>
+                                </div>
+                                <div class="stats-row">
+                                    <span class="stat-label">夜班發生次數</span>
+                                    <span class="stat-value" id="zongweiMoldingNight">0 次 (0%)</span>
+                                </div>
                             </div>
-                            <div class="stats-row">
-                                <span class="stat-label">日班發生次數</span>
-                                <span class="stat-value" id="zongweiMoldingDay">0 次 (0%)</span>
-                            </div>
-                            <div class="stats-row">
-                                <span class="stat-label">夜班發生次數</span>
-                                <span class="stat-value" id="zongweiMoldingNight">0 次 (0%)</span>
+                            <div class="stats-section">
+                                <div class="stats-group-title">⚠️ 問題類型</div>
+                                <div id="zongweiMoldingIssues"></div>
                             </div>
                         </div>
-                        <div class="stats-section">
-                            <div class="stats-group-title">⚠️ 問題類型</div>
-                            <div id="zongweiMoldingIssues"></div>
+                        
+                        <div class="factory-card">
+                            <div class="factory-title molding-title">博士廠 - 成型部門</div>
+                            <div class="stats-section">
+                                <div class="stats-group-title">📊 班別統計 (佔兩廠總異常百分比)</div>
+                                <div class="stats-row">
+                                    <span class="stat-label">報工修正總次數</span>
+                                    <span class="stat-value" id="bossMoldingTotal">0 次</span>
+                                </div>
+                                <div class="stats-row">
+                                    <span class="stat-label">日班發生次數</span>
+                                    <span class="stat-value" id="bossMoldingDay">0 次 (0%)</span>
+                                </div>
+                                <div class="stats-row">
+                                    <span class="stat-label">夜班發生次數</span>
+                                    <span class="stat-value" id="bossMoldingNight">0 次 (0%)</span>
+                                </div>
+                            </div>
+                            <div class="stats-section">
+                                <div class="stats-group-title">⚠️ 問題類型</div>
+                                <div id="bossMoldingIssues"></div>
+                            </div>
                         </div>
                     </div>
                     
-                    <div class="factory-card">
-                        <div class="factory-title molding-title">博士廠 - 成型部門</div>
-                        <div class="stats-section">
-                            <div class="stats-group-title">📊 班別統計</div>
-                            <div class="stats-row">
-                                <span class="stat-label">報工修正總次數</span>
-                                <span class="stat-value" id="bossMoldingTotal">0 次</span>
-                            </div>
-                            <div class="stats-row">
-                                <span class="stat-label">日班發生次數</span>
-                                <span class="stat-value" id="bossMoldingDay">0 次 (0%)</span>
-                            </div>
-                            <div class="stats-row">
-                                <span class="stat-label">夜班發生次數</span>
-                                <span class="stat-value" id="bossMoldingNight">0 次 (0%)</span>
-                            </div>
+                    <!-- 詳細圖表區塊 -->
+                    <div class="detailed-chart-section">
+                        <div class="detailed-chart-container">
+                            <div class="detailed-chart-title">宗瑋廠 - 班別與問題分析 (成型)</div>
+                            <canvas id="zongweiMoldingDetailedChart"></canvas>
                         </div>
-                        <div class="stats-section">
-                            <div class="stats-group-title">⚠️ 問題類型</div>
-                            <div id="bossMoldingIssues"></div>
+                        <div class="detailed-chart-container">
+                            <div class="detailed-chart-title">博士廠 - 班別與問題分析 (成型)</div>
+                            <canvas id="bossMoldingDetailedChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 人員名單區塊 (成型) -->
+                    <div class="full-width-personnel-section">
+                        <div class="personnel-section">
+                            <div class="personnel-title" id="zongweiMoldingPersonnelTitle">宗瑋廠 - 發生次數>3次人員</div>
+                            <div id="zongweiMoldingPersonnel"></div>
+                        </div>
+                        <div class="personnel-section">
+                            <div class="personnel-title" id="bossMoldingPersonnelTitle">博士廠 - 發生次數>3次人員</div>
+                            <div id="bossMoldingPersonnel"></div>
                         </div>
                     </div>
                 </div>
                 
-                <!-- 詳細圖表區塊 -->
-                <div class="detailed-chart-section">
-                    <div class="detailed-chart-container">
-                        <div class="detailed-chart-title">宗瑋廠 - 班別與問題分析 (成型)</div>
-                        <canvas id="zongweiMoldingDetailedChart"></canvas>
+                <!-- 組裝部門 -->
+                <div id="assemblySection">
+                    <div class="section-subtitle">📦 組裝部門現況</div>
+                    <div class="factory-row">
+                        <div class="factory-card">
+                            <div class="factory-title assembly-title">宗瑋廠 - 組裝部門</div>
+                            <div class="stats-section">
+                                <div class="stats-group-title">📊 基本統計</div>
+                                <div class="stats-row">
+                                    <span class="stat-label">報工修正總次數</span>
+                                    <span class="stat-value" id="zongweiAssemblyTotal">0 次</span>
+                                </div>
+                                <div class="stats-row">
+                                    <span class="stat-label">工作班別</span>
+                                    <span class="stat-value">日班作業</span>
+                                </div>
+                            </div>
+                            <div class="stats-section">
+                                <div class="stats-group-title">⚠️ 問題類型</div>
+                                <div id="zongweiAssemblyIssues"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="factory-card">
+                            <div class="factory-title assembly-title">博士廠 - 組裝部門</div>
+                            <div class="stats-section">
+                                <div class="stats-group-title">📊 基本統計</div>
+                                <div class="stats-row">
+                                    <span class="stat-label">報工修正總次數</span>
+                                    <span class="stat-value" id="bossAssemblyTotal">0 次</span>
+                                </div>
+                                <div class="stats-row">
+                                    <span class="stat-label">工作班別</span>
+                                    <span class="stat-value">日班作業</span>
+                                </div>
+                            </div>
+                            <div class="stats-section">
+                                <div class="stats-group-title">⚠️ 問題類型</div>
+                                <div id="bossAssemblyIssues"></div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="detailed-chart-container">
-                        <div class="detailed-chart-title">博士廠 - 班別與問題分析 (成型)</div>
-                        <canvas id="bossMoldingDetailedChart"></canvas>
-                    </div>
-                </div>
 
-                <!-- 人員名單區塊 (成型) -->
-                <div class="full-width-personnel-section">
-                    <div class="personnel-section">
-                        <div class="personnel-title" id="zongweiMoldingPersonnelTitle">宗瑋廠 - 發生次數>3次人員</div>
-                        <div id="zongweiMoldingPersonnel"></div>
+                    <!-- 人員名單區塊 (組裝) -->
+                    <div class="full-width-personnel-section">
+                        <div class="personnel-section">
+                            <div class="personnel-title" id="zongweiAssemblyPersonnelTitle">宗瑋廠 - 發生次數>3次人員</div>
+                            <div id="zongweiAssemblyPersonnel"></div>
+                        </div>
+                        <div class="personnel-section">
+                            <div class="personnel-title" id="bossAssemblyPersonnelTitle">博士廠 - 發生次數>3次人員</div>
+                            <div id="bossAssemblyPersonnel"></div>
+                        </div>
                     </div>
-                    <div class="personnel-section">
-                        <div class="personnel-title" id="bossMoldingPersonnelTitle">博士廠 - 發生次數>3次人員</div>
-                        <div id="bossMoldingPersonnel"></div>
+                </div>
+                
+                <div class="insights" id="insightsSection">
+                    <div class="section-subtitle">📊 客觀現況觀察與建議</div>
+                    <div class="insight-grid" id="insightsGrid">
+                        <!-- Insights will be generated here -->
                     </div>
                 </div>
             </div>
-            
-            <!-- 組裝部門 -->
-            <div id="assemblySection">
-                <div class="section-subtitle">📦 組裝部門現況</div>
-                <div class="factory-row">
-                    <div class="factory-card">
-                        <div class="factory-title assembly-title">宗瑋廠 - 組裝部門</div>
-                        <div class="stats-section">
-                            <div class="stats-group-title">📊 基本統計</div>
-                            <div class="stats-row">
-                                <span class="stat-label">報工修正總次數</span>
-                                <span class="stat-value" id="zongweiAssemblyTotal">0 次</span>
-                            </div>
-                            <div class="stats-row">
-                                <span class="stat-label">工作班別</span>
-                                <span class="stat-value">日班作業</span>
-                            </div>
-                        </div>
-                        <div class="stats-section">
-                            <div class="stats-group-title">⚠️ 問題類型</div>
-                            <div id="zongweiAssemblyIssues"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="factory-card">
-                        <div class="factory-title assembly-title">博士廠 - 組裝部門</div>
-                        <div class="stats-section">
-                            <div class="stats-group-title">📊 基本統計</div>
-                            <div class="stats-row">
-                                <span class="stat-label">報工修正總次數</span>
-                                <span class="stat-value" id="bossAssemblyTotal">0 次</span>
-                            </div>
-                            <div class="stats-row">
-                                <span class="stat-label">工作班別</span>
-                                <span class="stat-value">日班作業</span>
-                            </div>
-                        </div>
-                        <div class="stats-section">
-                            <div id="bossAssemblyIssues"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 人員名單區塊 (組裝) -->
-                <div class="full-width-personnel-section">
-                    <div class="personnel-section">
-                        <div class="personnel-title" id="zongweiAssemblyPersonnelTitle">宗瑋廠 - 發生次數>3次人員</div>
-                        <div id="zongweiAssemblyPersonnel"></div>
-                    </div>
-                    <div class="personnel-section">
-                        <div class="personnel-title" id="bossAssemblyPersonnelTitle">博士廠 - 發生次數>3次人員</div>
-                        <div id="bossAssemblyPersonnel"></div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="insights" id="insightsSection">
-                <div class="section-subtitle">📊 客觀現況觀察與建議</div>
-                <div class="insight-grid" id="insightsGrid">
-                    <!-- Insights will be generated here -->
-                </div>
-            </div>
+            <!-- END OF pdfContentWrapper -->
         </div>
     </div>
     
@@ -1063,19 +1065,33 @@
             return result;
         }
         
-        // 更新成型部門統計
+        // 更新成型部門統計 (已修改百分比邏輯)
         function updateMoldingStats(analysis) {
             const zongweiMolding = analysis['宗瑋廠']['成型'];
             const bossMolding = analysis['博士廠']['成型'];
             
+            // NEW: Combined Total for Percentage Calculation
+            const moldingTotalCombined = zongweiMolding.total + bossMolding.total;
+
+            // 宗瑋廠
             document.getElementById('zongweiMoldingTotal').textContent = `${zongweiMolding.total} 次`;
-            document.getElementById('zongweiMoldingDay').textContent = `${zongweiMolding.dayShift} 次 (${zongweiMolding.total > 0 ? ((zongweiMolding.dayShift / zongweiMolding.total) * 100).toFixed(1) : 0}%)`;
-            document.getElementById('zongweiMoldingNight').textContent = `${zongweiMolding.nightShift} 次 (${zongweiMolding.total > 0 ? ((zongweiMolding.nightShift / zongweiMolding.total) * 100).toFixed(1) : 0}%)`;
+            // 修正: 百分比改為佔兩廠成型總數的比例
+            const zongweiDayPct = moldingTotalCombined > 0 ? ((zongweiMolding.dayShift / moldingTotalCombined) * 100).toFixed(1) : 0;
+            const zongweiNightPct = moldingTotalCombined > 0 ? ((zongweiMolding.nightShift / moldingTotalCombined) * 100).toFixed(1) : 0;
+            
+            document.getElementById('zongweiMoldingDay').textContent = `${zongweiMolding.dayShift} 次 (${zongweiDayPct}%)`;
+            document.getElementById('zongweiMoldingNight').textContent = `${zongweiMolding.nightShift} 次 (${zongweiNightPct}%)`;
             updateIssuesDisplay('zongweiMoldingIssues', zongweiMolding.issues, zongweiMolding.total);
             
+            // 博士廠
             document.getElementById('bossMoldingTotal').textContent = `${bossMolding.total} 次`;
-            document.getElementById('bossMoldingDay').textContent = `${bossMolding.dayShift} 次 (${bossMolding.total > 0 ? ((bossMolding.dayShift / bossMolding.total) * 100).toFixed(1) : 0}%)`;
-            document.getElementById('bossMoldingNight').textContent = `${bossMolding.nightShift} 次 (${bossMolding.total > 0 ? ((bossMolding.nightShift / bossMolding.total) * 100).toFixed(1) : 0}%)`;
+            // 修正: 百分比改為佔兩廠成型總數的比例
+            const bossDayPct = moldingTotalCombined > 0 ? ((bossMolding.dayShift / moldingTotalCombined) * 100).toFixed(1) : 0;
+            const bossNightPct = moldingTotalCombined > 0 ? ((bossMolding.nightShift / moldingTotalCombined) * 100).toFixed(1) : 0;
+            
+            document.getElementById('bossMoldingDay').textContent = `${bossMolding.dayShift} 次 (${bossDayPct}%)`;
+            // 修正：將 bossMoldingNight 改為 bossNightPct
+            document.getElementById('bossMoldingNight').textContent = `${bossMolding.nightShift} 次 (${bossNightPct}%)`;
             updateIssuesDisplay('bossMoldingIssues', bossMolding.issues, bossMolding.total);
 
             // 更新人員
@@ -1168,6 +1184,27 @@
             
             const chartLabels = MAIN_ISSUES.slice(0, 3); // 只顯示前三大問題
             
+            // --- Start of new logic to find Global Max for uniform scale ---
+            let globalMax = 0;
+            chartLabels.forEach(issue => {
+                globalMax = Math.max(globalMax, zongweiData.day[issue], zongweiData.night[issue]);
+                globalMax = Math.max(globalMax, bossData.day[issue], bossData.night[issue]);
+            });
+            
+            // 確保 Y 軸最大值足夠顯示，且有視覺上的緩衝
+            let displayMax = globalMax;
+
+            if (globalMax === 0) {
+                displayMax = 10;
+            } else if (globalMax < 5) {
+                displayMax = 5;
+            } else {
+                // 向上取整到最近的 5 的倍數，並確保比 globalMax 大 (e.g., 62 -> 65)
+                displayMax = Math.ceil((globalMax + 1) / 5) * 5;
+            }
+            // --- End of new logic ---
+
+
             // 宗瑋廠詳細圖表
             const zongweiCtx = document.getElementById('zongweiMoldingDetailedChart').getContext('2d');
             charts['zongweiDetailed'] = new Chart(zongweiCtx, {
@@ -1193,7 +1230,7 @@
                         }
                     ]
                 },
-                options: getDetailedChartOptions()
+                options: getDetailedChartOptions(displayMax) // <--- Pass the calculated max value
             });
             
             // 博士廠詳細圖表
@@ -1221,12 +1258,12 @@
                         }
                     ]
                 },
-                options: getDetailedChartOptions()
+                options: getDetailedChartOptions(displayMax) // <--- Pass the calculated max value
             });
         }
         
-        // 新的圖表設定
-        function getDetailedChartOptions() {
+        // 新的圖表設定 - 接受一個參數來設定 Y 軸的最大值
+        function getDetailedChartOptions(globalMax) { // <--- Receive the max value
             return {
                 responsive: true,
                 maintainAspectRatio: false,
@@ -1235,7 +1272,14 @@
                     tooltip: { mode: 'index', intersect: false }
                 },
                 scales: {
-                    y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 12 } } },
+                    y: { 
+                        beginAtZero: true, 
+                        max: globalMax, // <--- Set the calculated max scale here
+                        ticks: { 
+                            stepSize: globalMax > 20 ? Math.ceil(globalMax / 5) : 5, // Dynamic step size, crude but works
+                            font: { size: 12 } 
+                        } 
+                    },
                     x: { ticks: { font: { size: 14 } } }
                 }
             };
@@ -1255,15 +1299,19 @@
             const zongweiAssemblyTotal = analysis['宗瑋廠']['組裝'].total;
             const bossAssemblyTotal = analysis['博士廠']['組裝'].total;
             
+            // --- 變更開始: 整合分析項目 ---
             // 確保組裝部門分析只在有數據時顯示，避免無意義的佔位
             const insights = [
-                { title: "🔧 成型部門班別差異分析", fn: generateShiftAnalysis }, 
-                { title: "⚠️ 問題類型總體分析", fn: generateIssueAnalysis },    
-                { title: "🏭 兩廠總體異常趨勢比較", fn: generateTrendAnalysis },  
-                { title: "👥 重點關注人員建議", fn: generatePersonnelAnalysis },  
+                // 項目 1: 合併 (班別差異 + 總體趨勢)
+                { title: "🔧 成型班別 & 兩廠總體趨勢", fn: generateMergedShiftTrendAnalysis }, 
+                // 項目 2: 合併 (問題類型 + 重點人員)
+                { title: "⚠️ 主要問題 & 重點人員分析", fn: generateMergedIssuePersonnelAnalysis },    
+                // 項目 3: 組裝
                 { title: "📦 組裝部門表現分析", fn: generateAssemblyAnalysis, condition: (zongweiAssemblyTotal > 0 || bossAssemblyTotal > 0) }, 
+                // 項目 4: 結論
                 { title: "💡 結論與流程改善方向", fn: generateRecommendations } 
             ];
+            // --- 變更結束 ---
             
             let html = '';
             // 過濾掉不符合條件的項目，以取得實際顯示的項目數
@@ -1273,8 +1321,13 @@
                 const result = insight.fn(analysis, totalIssues, allIssues); 
                 let contentHtml;
                 
+                // --- 變更開始: 處理合併後的 HTML ---
+                if (result.isMerged) {
+                    contentHtml = result.htmlContent;
+                }
+                // --- 變更結束 ---
                 // 檢查是否為結構化內容 (列表)
-                if (result.isStructured) {
+                else if (result.isStructured) {
                     const listHtml = result.list.map((item) => `<li>${item.title}： ${item.content.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')}</li>`).join('');
                     
                     // --- 修正 Change 3: 針對「結論與流程改善方向」的特殊渲染 ---
@@ -1298,8 +1351,10 @@
                     contentHtml = `<p>${result.summary.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')}</p>`;
                 }
                 
-                // 僅讓最後一個項目 (I6) 佔滿整行
-                const spanClass = (index === filteredInsights.length - 1) ? ' span-full' : '';
+                // --- 變更開始: 調整 span-full 邏輯 ---
+                // 如果過濾後的項目總數是奇數，則讓最後一個項目 (結論) 佔滿整行
+                const spanClass = (filteredInsights.length % 2 === 1 && index === filteredInsights.length - 1) ? ' span-full' : '';
+                // --- 變更結束 ---
                 
                 html += `
                     <div class="insight-item${spanClass}">
@@ -1311,20 +1366,60 @@
             document.getElementById('insightsGrid').innerHTML = html;
         }
         
+        // --- 變更開始: 新增合併的分析函式 ---
+        // 🔧 (合併) 成型部門班別差異 & 兩廠總體趨勢
+        function generateMergedShiftTrendAnalysis(analysis, totalIssues, allIssues) {
+            const shiftResult = generateShiftAnalysis(analysis, totalIssues, allIssues);
+            const trendResult = generateTrendAnalysis(analysis, totalIssues, allIssues);
+            
+            // 透過 <hr> 分隔線合併兩個分析的 HTML
+            const combinedHtml = `
+                <p>${shiftResult.summary.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')}</p>
+                <hr style="margin: 15px 0; border-top: 2px solid #e0e7ff;">
+                <p>${trendResult.summary.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')}</p>
+            `;
+            
+            // 返回一個帶有 'isMerged' 標記的特殊物件
+            return { htmlContent: combinedHtml, isMerged: true };
+        }
+
+        // ⚠️ (合併) 問題類型總體分析 & 重點關注人員建議
+        function generateMergedIssuePersonnelAnalysis(analysis, totalIssues, allIssues) {
+            const issueResult = generateIssueAnalysis(analysis, totalIssues, allIssues);
+            const personnelResult = generatePersonnelAnalysis(analysis, totalIssues, allIssues);
+
+            const combinedHtml = `
+                <p>${issueResult.summary.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')}</p>
+                <hr style="margin: 15px 0; border-top: 2px solid #e0e7ff;">
+                <p>${personnelResult.summary.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')}</p>
+            `;
+            
+            return { htmlContent: combinedHtml, isMerged: true };
+        }
+        // --- 變更結束 ---
+
         // 🔧 成型部門班別差異分析 (修正邏輯: 依據次數, 並修正結論措辭)
         function generateShiftAnalysis(analysis, totalIssues, allIssues) {
             const zongwei = analysis['宗瑋廠']['成型'];
             const boss = analysis['博士廠']['成型'];
             
-            const zongweiDayPct = zongwei.total > 0 ? ((zongwei.dayShift / zongwei.total) * 100).toFixed(1) : 0;
-            const zongweiNightPct = zongwei.total > 0 ? ((zongwei.nightShift / zongwei.total) * 100).toFixed(1) : 0;
-            const bossDayPct = boss.total > 0 ? ((boss.dayShift / boss.total) * 100).toFixed(1) : 0;
-            const bossNightPct = boss.total > 0 ? ((boss.nightShift / boss.total) * 100).toFixed(1) : 0;
+            // NEW: 獲取兩廠成型部門總數
+            const moldingTotalCombined = zongwei.total + boss.total;
             
-            // 1. 數據分佈內文
-            let result = `宗瑋廠成型部門 (總 **${zongwei.total}** 次) 異常分佈：<br>`;
+            // 修正: 百分比改為佔兩廠成型總數的比例 (這是使用者要求的關鍵修正)
+            const zongweiDayPct = moldingTotalCombined > 0 ? ((zongwei.dayShift / moldingTotalCombined) * 100).toFixed(1) : 0;
+            const zongweiNightPct = moldingTotalCombined > 0 ? ((zongwei.nightShift / moldingTotalCombined) * 100).toFixed(1) : 0;
+            const bossDayPct = moldingTotalCombined > 0 ? ((boss.dayShift / moldingTotalCombined) * 100).toFixed(1) : 0;
+            const bossNightPct = moldingTotalCombined > 0 ? ((boss.nightShift / moldingTotalCombined) * 100).toFixed(1) : 0;
+
+            const zongweiTotalPct = moldingTotalCombined > 0 ? ((zongwei.total / moldingTotalCombined) * 100).toFixed(1) : 0;
+            const bossTotalPct = moldingTotalCombined > 0 ? ((boss.total / moldingTotalCombined) * 100).toFixed(1) : 0;
+
+            // 1. 數據分佈內文 (Updated to show contribution to total molding issues)
+            let result = `**宗瑋廠** 成型部門 (總 **${zongwei.total}** 次) 佔總成型異常的 **${zongweiTotalPct}%**：<br>`;
             result += `日班 **${zongwei.dayShift}** 次 (**${zongweiDayPct}**%)，夜班 **${zongwei.nightShift}** 次 (**${zongweiNightPct}**%)。<br>`;
-            result += `博士廠成型部門 (總 **${boss.total}** 次) 異常分佈：<br>`;
+            
+            result += `**博士廠** 成型部門 (總 **${boss.total}** 次) 佔總成型異常的 **${bossTotalPct}%**：<br>`;
             result += `日班 **${boss.dayShift}** 次 (**${bossDayPct}**%)，夜班 **${boss.nightShift}** 次 (**${bossNightPct}**%)。<br>`;
 
             // 2. 判斷次數最多者 (新邏輯)
@@ -1402,7 +1497,7 @@
             summary += `<br>**數量錯誤** 佔 **${quantityPct}%**，以及 **未送啟始件** 佔 **${noStartPct}%**。`;
             
             if (maxIssueShiftDetail) {
-                 const plainSentencePart1 = `<br>其中 ${maxIssueShiftDetail.factory} 的 ${maxIssueShiftDetail.shift}班 在 ${maxIssueShiftDetail.reason} 項目上發生了最高的 ${maxIssueShiftDetail.count} 次異常，`;
+                 const plainSentencePart1 = `<br>其中 <b>${maxIssueShiftDetail.factory}</b> 的 <b>${maxIssueShiftDetail.shift}班</b> 在 <b>${maxIssueShiftDetail.reason}</b> 項目上發生了最高的 ${maxIssueShiftDetail.count} 次異常，`;
                  // 修正 2: 這裡加上 <br> 以確保換行
                  const plainSentencePart2 = `<br>應作為優先改善的目標。`; 
                  summary += plainSentencePart1 + plainSentencePart2;
@@ -1458,7 +1553,7 @@
             return { summary: summary, isStructured: false };
         }
 
-        // 🏭 兩廠總體異常趨勢比較
+        // 🏭 兩廠總體異常趨勢比較 (已修正：新增粗體突顯)
         function generateTrendAnalysis(analysis, totalIssues, allIssues) {
             const zongweiTotal = analysis['宗瑋廠']['成型'].total + analysis['宗瑋廠']['組裝'].total;
             const bossTotal = analysis['博士廠']['成型'].total + analysis['博士廠']['組裝'].total;
@@ -1469,7 +1564,8 @@
             
             // 重新建構符合使用者模板的內文
             let summary = `本期間兩廠總計發生 **${totalIssues}** 次異常。`; 
-            summary += `<br>宗瑋廠總次數為 **${zongweiTotal}** 次，博士廠總次數為 **${bossTotal}** 次。`;
+            // 修正: 突顯兩廠總次數
+            summary += `<br>**宗瑋廠** 總次數為 **${zongweiTotal} 次**，**博士廠** 總次數為 **${bossTotal} 次**。`;
 
             if (zongweiTotal > bossTotal) {
                 summary += `<br>應優先審視 **宗瑋廠** 整體報工流程是否正確。`;
@@ -1482,7 +1578,7 @@
             return { summary: summary, isStructured: false };
         }
 
-        // 💡 結論與流程改善方向 (已更新生產週期檢核)
+        // 💡 結論與流程改善方向 (已修正：為關鍵詞彙重新加入粗體)
         function generateRecommendations(analysis, totalIssues, allIssues) {
             
             if (totalIssues === 0) {
@@ -1502,10 +1598,9 @@
                     content: "建立標準化的異常處理流程，確保作業員在遇到 **系統、網路** 問題時，會 **即時向現場技術員或主管反應**。"
                 },
                 {
-                    // 已修改為用戶要求的標題
+                    // 修正 3: 根據使用者要求精簡文字
                     title: "預定生產起訖日", 
-                    // 已修改為用戶要求的內容
-                    content: "檢視異常報工數據中因**工單逾期**的問題比例，並且請 **生管** 確認當前工單的**預定完成日**的合理性，確保工單時程符合現場實際作業需求。"
+                    content: "檢視異常報工中因 **工單逾期** 的問題比例，並請 **生管** 確認工單的 **預定完成日** 的合理性，確保工單時程符合現場作業需求。"
                 }
             ];
             
@@ -1515,7 +1610,7 @@
         // 匯出報表為PDF
         async function exportPdf() {
             const exportBtn = document.getElementById('exportPdfBtn');
-            const dashboard = document.getElementById('dashboard');
+            const pdfContentWrapper = document.getElementById('pdfContentWrapper'); // FIX 2: 使用新的 wrapper
             const moldingSection = document.getElementById('moldingSection');
             const assemblySection = document.getElementById('assemblySection');
             const insightsSection = document.getElementById('insightsSection');
@@ -1533,7 +1628,7 @@
                 insightsSection.style.display = 'none';
                 moldingSection.style.display = 'block'; // 確保成型可見
 
-                const moldingCanvas = await html2canvas(dashboard, { scale: 2, useCORS: true });
+                const moldingCanvas = await html2canvas(pdfContentWrapper, { scale: 2, useCORS: true }); // FIX 2: 捕獲 wrapper
                 const moldingImg = moldingCanvas.toDataURL('image/jpeg', 1.0);
                 const moldingWidth = pdf.internal.pageSize.getWidth();
                 const moldingHeight = (moldingCanvas.height * moldingWidth) / moldingCanvas.width;
@@ -1544,7 +1639,7 @@
                 assemblySection.style.display = 'block';
                 insightsSection.style.display = 'block';
 
-                const assemblyCanvas = await html2canvas(dashboard, { scale: 2, useCORS: true });
+                const assemblyCanvas = await html2canvas(pdfContentWrapper, { scale: 2, useCORS: true }); // FIX 2: 捕獲 wrapper
                 const assemblyImg = assemblyCanvas.toDataURL('image/jpeg', 1.0);
                 const assemblyWidth = pdf.internal.pageSize.getWidth();
                 const assemblyHeight = (assemblyCanvas.height * assemblyWidth) / assemblyCanvas.width;
