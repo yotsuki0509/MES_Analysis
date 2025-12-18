@@ -542,7 +542,7 @@
     <div class="container">
         <div class="header">
             <h1>🏭 MES現場報工異常分析平台</h1>
-            <p>製造執行系統 · 現場報工數據分析 · 智能異常檢測</p>
+            <p>製造執行系統 · 現場報工數據分析 · 智能異常檢測--Crafted by Alan勝全</p>
         </div>
         
         <div class="upload-section">
@@ -741,7 +741,7 @@
         
         const TARGET_FIELDS = ['廠別', '部門', '調整日期', '報工人員1', '班別', '調整原因'];
         // 定義主要問題類型
-        const MAIN_ISSUES = ['漏報工', '數量錯誤', '未送啟始件', '其他/未分類'];
+        const MAIN_ISSUES = ['漏報工', '數量錯誤', '未送啟始件(後補)', '其他/未分類'];
         
         // Helper: 將 Excel 序列日期 (數字) 轉換為 YYYY-MM-DD 字符串
         function excelDateToISOString(serial) {
@@ -1011,8 +1011,8 @@
         // 新增 - 分析詳細問題 (班別 vs 問題)
         function analyzeDetailedIssues(data, dept) {
             const detailedIssues = {
-                day: { '漏報工': 0, '數量錯誤': 0, '未送啟始件': 0, '其他/未分類': 0 },
-                night: { '漏報工': 0, '數量錯誤': 0, '未送啟始件': 0, '其他/未分類': 0 }
+                day: { '漏報工': 0, '數量錯誤': 0, '未送啟始件(後補)': 0, '其他/未分類': 0 },
+                night: { '漏報工': 0, '數量錯誤': 0, '未送啟始件(後補)': 0, '其他/未分類': 0 }
             };
             data.forEach(row => {
                 let shift = 'day'; // 組裝部門預設為日班
@@ -1031,7 +1031,7 @@
             const reasonStr = row['調整原因'] ? row['調整原因'].toString() : '';
             if (reasonStr.includes('漏報工')) return '漏報工';
             if (reasonStr.includes('數量錯誤')) return '數量錯誤';
-            if (reasonStr.includes('未送啟始件')) return '未送啟始件';
+            if (reasonStr.includes('未送啟始件(後補)')) return '未送啟始件(後補)';
             return '其他/未分類';
         }
         
@@ -1044,22 +1044,20 @@
                 if (person1 && person1.toString().trim() !== '') {
                     const names = person1.toString().split('/').map(name => name.trim()).filter(name => name !== '');
                     names.forEach(personName => {
+                        // 只需要 total，不再需要 shifts 資訊
                         if (!personnel[personName]) personnel[personName] = { total: 0, shifts: {} };
                         personnel[personName].total++;
-                        if (shift) personnel[personName].shifts[shift] = (personnel[personName].shifts[shift] || 0) + 1;
+                        // if (shift) personnel[personName].shifts[shift] = (personnel[personName].shifts[shift] || 0) + 1; // 移除班別統計邏輯
                     });
                 }
             });
             
             const result = {};
             Object.keys(personnel).forEach(person => {
+                // 這裡的邏輯不變: 發生次數>3次才列出
                 if (personnel[person].total > 3) {
-                    let primaryShift = ''; 
-                    const shifts = personnel[person].shifts;
-                    if (shifts['夜'] && shifts['日']) primaryShift = shifts['夜'] > shifts['日'] ? '夜' : '日';
-                    else if (shifts['夜']) primaryShift = '夜';
-                    else if (shifts['日']) primaryShift = '日';
-                    result[person] = { total: personnel[person].total, shift: primaryShift };
+                    // 簡化 result 結構，不再需要 shift 資訊
+                    result[person] = { total: personnel[person].total }; 
                 }
             });
             return result;
@@ -1141,14 +1139,15 @@
             element.innerHTML = html;
         }
         
-        // 更新人員統計顯示
+        // 更新人員統計顯示 (已修改: 移除班別顯示)
         function updatePersonnelDisplay(elementId, titleId, personnel, titleText) {
             const element = document.getElementById(elementId);
             const titleElement = document.getElementById(titleId);
+            // 由於 analyzePersonnel 已經簡化了結構，這裡的 map 只需要 name 和 total
             const personnelArray = Object.keys(personnel).map(name => ({
                 name: name,
                 count: personnel[name].total,
-                shift: personnel[name].shift
+                // shift: personnel[name].shift // 移除 shift 相關欄位
             })).sort((a, b) => b.count - a.count);
             
             const totalPersonnel = Object.keys(personnel).length;
@@ -1162,10 +1161,11 @@
             let html = '<div class="personnel-grid">';
             html += '<ul class="personnel-list">';
             personnelArray.forEach(person => {
+                // 核心修改: 移除 (${person.shift || '未知'}班)
                 html += `
                     <li class="personnel-item">
                         <span class="personnel-name">${person.name}</span>
-                        <span class="personnel-count">${person.count}次 (${person.shift || '未知'}班)</span>
+                        <span class="personnel-count">${person.count}次</span>
                     </li>
                 `;
             });
@@ -1460,7 +1460,7 @@
             
             const leakPct = allIssues['漏報工'] ? ((allIssues['漏報工'] / totalIssues) * 100).toFixed(1) : 0;
             const quantityPct = allIssues['數量錯誤'] ? ((allIssues['數量錯誤'] / totalIssues) * 100).toFixed(1) : 0;
-            const noStartPct = allIssues['未送啟始件'] ? ((allIssues['未送啟始件'] / totalIssues) * 100).toFixed(1) : 0;
+            const noStartPct = allIssues['未送啟始件(後補)'] ? ((allIssues['未送啟始件(後補)'] / totalIssues) * 100).toFixed(1) : 0;
             
             let maxIssueCount = 0;
             let maxIssueShiftDetail = null;
@@ -1494,7 +1494,7 @@
             // 重新建構符合使用者模板的內文
             let summary = `本期總異常次數為 **${totalIssues}** 次，分析結果如下：`;
             summary += `<br>**漏報工** 佔總異常的 **${leakPct}%**`;
-            summary += `<br>**數量錯誤** 佔 **${quantityPct}%**，以及 **未送啟始件** 佔 **${noStartPct}%**。`;
+            summary += `<br>**數量錯誤** 佔 **${quantityPct}%**，以及 **未送啟始件(後補)** 佔 **${noStartPct}%**。`;
             
             if (maxIssueShiftDetail) {
                  const plainSentencePart1 = `<br>其中 <b>${maxIssueShiftDetail.factory}</b> 的 <b>${maxIssueShiftDetail.shift}班</b> 在 <b>${maxIssueShiftDetail.reason}</b> 項目上發生了最高的 ${maxIssueShiftDetail.count} 次異常，`;
