@@ -913,7 +913,22 @@
                     result[factory][department].push(row);
                 }
             });
-            
+        function updateAssemblyStats(analysis) {
+            const zongweiAssembly = analysis['宗瑋廠']['組裝'];
+            const bossAssembly = analysis['博士廠']['組裝'];
+
+            // 更新組裝總次數
+            document.getElementById('zongweiAssemblyTotal').textContent = `${zongweiAssembly.total} 次`;
+            document.getElementById('bossAssemblyTotal').textContent = `${bossAssembly.total} 次`;
+
+            // 更新組裝問題類型
+            updateIssuesDisplay('zongweiAssemblyIssues', zongweiAssembly.issues, zongweiAssembly.total);
+            updateIssuesDisplay('bossAssemblyIssues', bossAssembly.issues, bossAssembly.total);
+
+            // 更新組裝人員名單 (次數 > 3 次才顯示)
+            updatePersonnelDisplay('zongweiAssemblyPersonnel', 'zongweiAssemblyPersonnelTitle', zongweiAssembly.personnel, '宗瑋廠 - 關注人員');
+            updatePersonnelDisplay('bossAssemblyPersonnel', 'bossAssemblyPersonnelTitle', bossAssembly.personnel, '博士廠 - 關注人員');
+        }
             const stats = {};
             Object.keys(result).forEach(factory => {
                 stats[factory] = {};
