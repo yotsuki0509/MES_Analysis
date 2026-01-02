@@ -11,63 +11,510 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* 基礎樣式和響應式設計 */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
             font-family: 'Inter', 'Microsoft YaHei', 'PingFang TC', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 10vh; padding: 20px; font-size: 1.0rem; 
+            min-height: 10vh;
+            padding: 20px;
+            font-size: 1.0rem; 
         }
+        
         .container {
-            max-width: 1400px; margin: 0 auto; background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px); overflow: hidden;
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
         }
-        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; }
-        .header h1 { font-size: 2.5rem; margin-bottom: 15px; font-weight: 800; }
-        .upload-section { padding: 35px; border-bottom: 2px solid #f0f0f0; }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 30px; 
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem; 
+            margin-bottom: 15px;
+            font-weight: 800;
+        }
+
+        .header p {
+            font-size: 1.1rem; 
+        }
+        
+        .upload-section {
+            padding: 35px; 
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
         .upload-area {
-            border: 3px dashed #667eea; border-radius: 15px; padding: 40px; 
-            text-align: center; background: rgba(102, 126, 234, 0.05);
-            transition: all 0.3s ease; cursor: pointer;
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 40px; 
+            text-align: center;
+            background: rgba(102, 126, 234, 0.05);
+            transition: all 0.3s ease;
+            cursor: pointer;
         }
-        .upload-area:hover { background: rgba(102, 126, 234, 0.1); border-color: #5a6fd8; }
-        .date-selector { display: flex; gap: 20px; justify-content: center; align-items: center; margin-top: 25px; flex-wrap: wrap; }
-        .date-input { padding: 10px 15px; border: 2px solid #ddd; border-radius: 8px; }
+
+        .upload-area h3 {
+            font-size: 1.4rem; 
+        }
+        
+        .upload-area p {
+            font-size: 1rem; 
+        }
+
+        .upload-area:hover {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: #5a6fd8;
+        }
+        
+        .upload-area.dragover {
+            background: rgba(102, 126, 234, 0.15);
+            border-color: #4A5FC7;
+        }
+        
+        .upload-icon {
+            font-size: 3rem; 
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+        
+        .path-input-section {
+            margin-top: 25px;
+            padding: 20px;
+            background: #f8f9ff;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .path-input-section h4 {
+            font-size: 1.1rem;
+        }
+
+        .path-input {
+            width: 100%;
+            padding: 12px; 
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem; 
+            margin-top: 15px;
+        }
+        
+        .date-selector {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            margin-top: 25px;
+            flex-wrap: wrap;
+            font-size: 1rem;
+        }
+        
+        .date-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .date-input {
+            padding: 10px 15px; 
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem; 
+            transition: border-color 0.3s;
+        }
+        
+        .date-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
         .analyze-btn {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white; border: none; padding: 12px 30px; border-radius: 30px;
-            font-size: 1rem; font-weight: 600; cursor: pointer; transition: transform 0.2s;
+            color: white;
+            border: none;
+            padding: 12px 30px; 
+            border-radius: 30px;
+            font-size: 1rem; 
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
         }
-        .analyze-btn:disabled { background: #ccc; cursor: not-allowed; }
-        .dashboard { padding: 35px 30px; display: none; }
-        .dashboard.show { display: block; }
-        .date-range-display { text-align: center; background: rgba(102, 126, 234, 0.1); padding: 15px; border-radius: 12px; margin-bottom: 30px; font-size: 2.2rem; font-weight: 700; color: #333; }
-        .factory-row { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px; }
-        .section-subtitle { font-size: 2.6rem; font-weight: 700; color: #333; margin-bottom: 22px; text-align: center; background: rgba(102, 126, 234, 0.1); padding: 16px; border-radius: 15px; }
-        .factory-card { background: white; border-radius: 16px; padding: 25px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); border: 1px solid rgba(102, 126, 234, 0.1); }
-        .factory-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 15px; text-align: center; padding: 15px; border-radius: 12px; color: white; }
-        .molding-title { background: linear-gradient(135deg, #4A90E2, #357ABD); }
-        .assembly-title { background: linear-gradient(135deg, #E94B8C, #D63384); }
-        .stats-group-title { font-size: 1.4rem; font-weight: 600; color: #4A90E2; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 3px solid #E3F2FD; text-align: left; padding-left: 10px; }
-        .stats-row { display: flex; justify-content: space-between; margin-bottom: 4px; padding: 4px 0; }
-        .stat-label, .stat-value { font-size: 1.3rem; }
-        .stat-value { font-weight: 700; color: #333; }
-        .detailed-chart-section { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 25px; padding-top: 15px; border-top: 2px solid #f0f0f0; }
-        .detailed-chart-container { height: 380px; padding: 15px; background: #f8f9ff; border-radius: 15px; }
-        .full-width-personnel-section { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 25px; padding-top: 15px; border-top: 2px solid #f0f0f0; }
-        .personnel-section { padding: 12px; background: #f8f9ff; border-radius: 15px; border-left: 5px solid #4A90E2; }
-        .personnel-title { font-size: 1.4rem; font-weight: 700; color: #4A90E2; margin-bottom: 12px; text-align: center; }
-        .personnel-item { background: white; padding: 8px 15px; margin-bottom: 5px; border-radius: 8px; display: flex; justify-content: space-between; border-left: 4px solid #E94B8C; font-size: 1.25rem; }
-        .insights { background: white; border-radius: 16px; padding: 30px; margin-top: 30px; }
-        .insight-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .insight-item { background: #f8f9ff; border-left: 5px solid #667eea; padding: 15px; border-radius: 10px; }
-        .insight-item h4 { color: #667eea; margin-bottom: 12px; font-size: 1.5rem; font-weight: 700; }
-        .insight-content-box { margin-top: 10px; padding: 12px 15px; border-radius: 8px; background-color: white; border: 1px solid #e0e7ff; }
-        .insight-content-box li { margin-bottom: 8px; padding-left: 25px; text-indent: -20px; list-style: none; font-size: 1.28rem; }
-        .insight-content-box li::before { content: "➔"; font-weight: bold; color: #E94B8C; margin-right: 10px; }
-        .loading { display: none; text-align: center; padding: 30px; font-size: 1.4rem; color: #667eea; }
-        .loading.show { display: block; }
-        @media (min-width: 1024px) { .insight-grid { grid-template-columns: 1fr 1fr; } .insight-item.span-full { grid-column: 1 / 3; } }
+        
+        .analyze-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .analyze-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .dashboard {
+            padding: 35px 30px; 
+            display: none;
+        }
+        
+        .dashboard.show {
+            display: block;
+        }
+        
+        .date-range-display {
+            text-align: center;
+            background: rgba(102, 126, 234, 0.1);
+            padding: 15px; 
+            border-radius: 12px;
+            margin-bottom: 30px;
+            font-size: 2.2rem; 
+            font-weight: 700;
+            color: #333;
+        }
+        
+        .factory-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px; 
+            margin-bottom: 30px; 
+        }
+        
+        .section-subtitle {
+            font-size: 2.6rem; 
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 22px;
+            text-align: center;
+            background: rgba(102, 126, 234, 0.1);
+            padding: 16px;
+            border-radius: 15px;
+        }
+        
+        .factory-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px; 
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .factory-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .factory-title {
+            font-size: 1.8rem; 
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-align: center;
+            padding: 15px;
+            border-radius: 12px;
+            color: white;
+        }
+        
+        .molding-title {
+            background: linear-gradient(135deg, #4A90E2, #357ABD);
+        }
+        
+        .assembly-title {
+            background: linear-gradient(135deg, #E94B8C, #D63384);
+        }
+        
+        .stats-section {
+            margin-bottom: 15px;
+        }
+        
+        .stats-group-title {
+            font-size: 1.4rem; 
+            font-weight: 600;
+            color: #4A90E2;
+            margin-bottom: 8px;
+            padding-bottom: 6px;
+            border-bottom: 3px solid #E3F2FD;
+            text-align: left; 
+            padding-left: 10px;
+        }
+        
+        .stats-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+            padding: 4px 0; 
+        }
+        
+        .stat-label, .stat-value {
+            font-size: 1.3rem; 
+        }
+
+        .stat-label {
+            color: #444;
+            font-weight: 500;
+        }
+        
+        .stat-value {
+            font-weight: 700;
+            color: #333;
+        }
+        
+        .detailed-chart-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        .detailed-chart-container {
+            height: 380px; 
+            padding: 15px;
+            background: #f8f9ff;
+            border-radius: 15px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .detailed-chart-title {
+            text-align: center;
+            font-size: 1.4rem; 
+            font-weight: 700;
+            color: #4A90E2;
+            margin-bottom: 15px;
+        }
+
+        .full-width-personnel-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        .personnel-section {
+            padding: 12px;
+            background: #f8f9ff;
+            border-radius: 15px;
+            border-left: 5px solid #4A90E2;
+        }
+        
+        .personnel-title {
+            font-size: 1.4rem; 
+            font-weight: 700;
+            color: #4A90E2;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        
+        .personnel-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+        }
+        
+        .personnel-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .personnel-item {
+            background: white;
+            padding: 8px 15px; 
+            margin-bottom: 5px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            border-left: 4px solid #E94B8C;
+            font-size: 1.25rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .personnel-name {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .personnel-count {
+            font-weight: 700;
+            color: #E94B8C;
+        }
+        
+        .no-personnel {
+            color: #28a745;
+            font-style: italic;
+            text-align: center;
+            padding: 15px;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .insights {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            margin-top: 30px;
+        }
+        
+        .insight-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); 
+            gap: 20px;
+        }
+        
+        .insight-item {
+            background: #f8f9ff;
+            border-left: 5px solid #667eea; 
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        .insight-item h4 {
+            color: #667eea;
+            margin-bottom: 12px;
+            font-size: 1.5rem; 
+            font-weight: 700;
+            text-align: left; 
+        }
+        
+        .insight-content-box {
+            margin-top: 10px;
+            padding: 12px 15px; 
+            border-radius: 8px;
+            background-color: white; 
+            border: 1px solid #e0e7ff;
+        }
+        
+        .insight-content-box strong, .insight-content-box b {
+            display: inline;
+            color: #764ba2; 
+            font-weight: 800;
+        }
+        
+        .insight-content-box p,
+        .insight-content-box li {
+            color: #333;
+            line-height: 1.6; 
+            font-size: 1.28rem; 
+            margin-bottom: 8px;
+            text-align: justify;
+        }
+        
+        .insight-content-box ul {
+            list-style-type: none;
+            padding-left: 0;
+            margin-left: 0;
+            margin-top: 10px;
+        }
+        .insight-content-box li {
+            margin-bottom: 8px;
+            padding-left: 25px; 
+            text-indent: -20px;
+        }
+        .insight-content-box li::before {
+            content: "➔"; 
+            font-weight: bold;
+            color: #E94B8C; 
+            margin-right: 10px;
+            font-size: 1.1rem;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 30px;
+            font-size: 1.4rem;
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        .loading.show {
+            display: block;
+        }
+
+        .preview-section {
+            margin-top: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+            font-size: 1rem;
+        }
+        
+        .field-status {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .field-item {
+            background: white;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            border-left: 4px solid #28a745;
+        }
+        
+        .field-item.missing {
+            border-left-color: #dc3545;
+        }
+        
+        .field-name {
+            font-weight: 700;
+            font-size: 1rem;
+        }
+        
+        .field-value {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        @media (min-width: 1024px) {
+            .insight-grid {
+                grid-template-columns: 1fr 1fr; 
+            }
+            .insight-item.span-full {
+                grid-column: 1 / 3; 
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .factory-row,
+            .detailed-chart-section,
+            .full-width-personnel-section {
+                grid-template-columns: 1fr;
+            }
+            .personnel-grid {
+                grid-template-columns: 1fr;
+            }
+            .insight-grid {
+                grid-template-columns: 1fr;
+            }
+            .date-selector {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .header h1 {
+                font-size: 2rem;
+            }
+            .section-subtitle {
+                font-size: 1.6rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -85,6 +532,14 @@
                 <input type="file" id="fileInput" accept=".xlsx,.xls" style="display: none;">
             </div>
             
+            <div class="path-input-section">
+                <h4>或輸入內網檔案路徑</h4>
+                <input type="text" id="pathInput" class="path-input" 
+                       placeholder="例如：\\server\shared\MES報工數據修正明細.xlsx" 
+                       disabled>
+                <small>注意：內網路徑功能需要在內網環境中使用</small>
+            </div>
+            
             <div class="date-selector">
                 <div class="date-group">
                     <label for="startDate">統計起始日：</label>
@@ -98,7 +553,9 @@
             </div>
         </div>
         
-        <div class="loading" id="loading">🔄 正在分析數據中...</div>
+        <div class="loading" id="loading">
+            <div>🔄 正在分析數據中...</div>
+        </div>
         
         <div class="dashboard" id="dashboard">
             <div style="text-align: right; margin-bottom: 20px;">
@@ -106,7 +563,9 @@
             </div>
             
             <div id="pdfContentWrapper">
-                <div id="pdfTitle" style="display:none; text-align:center; font-size: 40px; font-weight: bold; margin-bottom: 20px;">MES現場報工異常分析</div>
+                <div id="pdfTitle" style="display:none; text-align:center; font-size: 40px; font-weight: bold; margin-bottom: 20px;">
+                    MES現場報工異常分析
+                </div>
                 <div class="date-range-display" id="dateRangeDisplay"></div>
                 
                 <!-- 成型部門 -->
@@ -116,58 +575,133 @@
                         <div class="factory-card">
                             <div class="factory-title molding-title">宗瑋廠 - 成型部門</div>
                             <div class="stats-section">
-                                <div class="stats-group-title">📊 班別統計</div>
-                                <div class="stats-row"><span class="stat-label">修正總次數</span><span class="stat-value" id="zongweiMoldingTotal">0 次</span></div>
-                                <div class="stats-row"><span class="stat-label">日班發生</span><span class="stat-value" id="zongweiMoldingDay">0 次</span></div>
-                                <div class="stats-row"><span class="stat-label">夜班發生</span><span class="stat-value" id="zongweiMoldingNight">0 次</span></div>
+                                <div class="stats-group-title">📊 班別統計 (佔兩廠總異常百分比)</div>
+                                <div class="stats-row">
+                                    <span class="stat-label">報工修正總次數</span>
+                                    <span class="stat-value" id="zongweiMoldingTotal">0 次</span>
+                                </div>
+                                <div class="stats-row">
+                                    <span class="stat-label">日班發生次數</span>
+                                    <span class="stat-value" id="zongweiMoldingDay">0 次 (0%)</span>
+                                </div>
+                                <div class="stats-row">
+                                    <span class="stat-label">夜班發生次數</span>
+                                    <span class="stat-value" id="zongweiMoldingNight">0 次 (0%)</span>
+                                </div>
                             </div>
-                            <div class="stats-section"><div class="stats-group-title">⚠️ 問題類型</div><div id="zongweiMoldingIssues"></div></div>
+                            <div class="stats-section">
+                                <div class="stats-group-title">⚠️ 問題類型</div>
+                                <div id="zongweiMoldingIssues"></div>
+                            </div>
                         </div>
+                        
                         <div class="factory-card">
                             <div class="factory-title molding-title">博士廠 - 成型部門</div>
                             <div class="stats-section">
-                                <div class="stats-group-title">📊 班別統計</div>
-                                <div class="stats-row"><span class="stat-label">修正總次數</span><span class="stat-value" id="bossMoldingTotal">0 次</span></div>
-                                <div class="stats-row"><span class="stat-label">日班發生</span><span class="stat-value" id="bossMoldingDay">0 次</span></div>
-                                <div class="stats-row"><span class="stat-label">夜班發生</span><span class="stat-value" id="bossMoldingNight">0 次</span></div>
+                                <div class="stats-group-title">📊 班別統計 (佔兩廠總異常百分比)</div>
+                                <div class="stats-row">
+                                    <span class="stat-label">報工修正總次數</span>
+                                    <span class="stat-value" id="bossMoldingTotal">0 次</span>
+                                </div>
+                                <div class="stats-row">
+                                    <span class="stat-label">日班發生次數</span>
+                                    <span class="stat-value" id="bossMoldingDay">0 次 (0%)</span>
+                                </div>
+                                <div class="stats-row">
+                                    <span class="stat-label">夜班發生次數</span>
+                                    <span class="stat-value" id="bossMoldingNight">0 次 (0%)</span>
+                                </div>
                             </div>
-                            <div class="stats-section"><div class="stats-group-title">⚠️ 問題類型</div><div id="bossMoldingIssues"></div></div>
+                            <div class="stats-section">
+                                <div class="stats-group-title">⚠️ 問題類型</div>
+                                <div id="bossMoldingIssues"></div>
+                            </div>
                         </div>
                     </div>
+                    
                     <div class="detailed-chart-section">
-                        <div class="detailed-chart-container"><canvas id="zongweiMoldingDetailedChart"></canvas></div>
-                        <div class="detailed-chart-container"><canvas id="bossMoldingDetailedChart"></canvas></div>
+                        <div class="detailed-chart-container">
+                            <div class="detailed-chart-title">宗瑋廠 - 班別與問題分析 (成型)</div>
+                            <canvas id="zongweiMoldingDetailedChart"></canvas>
+                        </div>
+                        <div class="detailed-chart-container">
+                            <div class="detailed-chart-title">博士廠 - 班別與問題分析 (成型)</div>
+                            <canvas id="bossMoldingDetailedChart"></canvas>
+                        </div>
                     </div>
+
                     <div class="full-width-personnel-section">
-                        <div class="personnel-section"><div class="personnel-title" id="zongweiMoldingPersonnelTitle">宗瑋廠 - 關注人員</div><div id="zongweiMoldingPersonnel"></div></div>
-                        <div class="personnel-section"><div class="personnel-title" id="bossMoldingPersonnelTitle">博士廠 - 關注人員</div><div id="bossMoldingPersonnel"></div></div>
+                        <div class="personnel-section">
+                            <div class="personnel-title" id="zongweiMoldingPersonnelTitle">宗瑋廠 - 發生次數>3次人員</div>
+                            <div id="zongweiMoldingPersonnel"></div>
+                        </div>
+                        <div class="personnel-section">
+                            <div class="personnel-title" id="bossMoldingPersonnelTitle">博士廠 - 發生次數>3次人員</div>
+                            <div id="bossMoldingPersonnel"></div>
+                        </div>
                     </div>
                 </div>
                 
-                <!-- 組裝部門 (恢復顯示) -->
-                <div id="assemblySection" style="margin-top: 50px;">
+                <!-- 組裝部門 (已隱藏，如需恢復請刪除 style="display:none") -->
+                <div id="assemblySection" style="display: none;">
                     <div class="section-subtitle">📦 組裝部門現況</div>
                     <div class="factory-row">
                         <div class="factory-card">
                             <div class="factory-title assembly-title">宗瑋廠 - 組裝部門</div>
                             <div class="stats-section">
-                                <div class="stats-row"><span class="stat-label">修正總次數</span><span class="stat-value" id="zongweiAssemblyTotal">0 次</span></div>
+                                <div class="stats-group-title">📊 基本統計</div>
+                                <div class="stats-row">
+                                    <span class="stat-label">報工修正總次數</span>
+                                    <span class="stat-value" id="zongweiAssemblyTotal">0 次</span>
+                                </div>
+                                <div class="stats-row">
+                                    <span class="stat-label">工作班別</span>
+                                    <span class="stat-value">日班作業</span>
+                                </div>
                             </div>
-                            <div class="stats-section"><div class="stats-group-title">⚠️ 問題類型</div><div id="zongweiAssemblyIssues"></div></div>
+                            <div class="stats-section">
+                                <div class="stats-group-title">⚠️ 問題類型</div>
+                                <div id="zongweiAssemblyIssues"></div>
+                            </div>
                         </div>
+                        
                         <div class="factory-card">
                             <div class="factory-title assembly-title">博士廠 - 組裝部門</div>
                             <div class="stats-section">
-                                <div class="stats-row"><span class="stat-label">修正總次數</span><span class="stat-value" id="bossAssemblyTotal">0 次</span></div>
+                                <div class="stats-group-title">📊 基本統計</div>
+                                <div class="stats-row">
+                                    <span class="stat-label">報工修正總次數</span>
+                                    <span class="stat-value" id="bossAssemblyTotal">0 次</span>
+                                </div>
+                                <div class="stats-row">
+                                    <span class="stat-label">工作班別</span>
+                                    <span class="stat-value">日班作業</span>
+                                </div>
                             </div>
-                            <div class="stats-section"><div class="stats-group-title">⚠️ 問題類型</div><div id="bossAssemblyIssues"></div></div>
+                            <div class="stats-section">
+                                <div class="stats-group-title">⚠️ 問題類型</div>
+                                <div id="bossAssemblyIssues"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="full-width-personnel-section">
+                        <div class="personnel-section">
+                            <div class="personnel-title" id="zongweiAssemblyPersonnelTitle">宗瑋廠 - 發生次數>3次人員</div>
+                            <div id="zongweiAssemblyPersonnel"></div>
+                        </div>
+                        <div class="personnel-section">
+                            <div class="personnel-title" id="bossAssemblyPersonnelTitle">博士廠 - 發生次數>3次人員</div>
+                            <div id="bossAssemblyPersonnel"></div>
                         </div>
                     </div>
                 </div>
                 
                 <div class="insights" id="insightsSection">
                     <div class="section-subtitle">📊 客觀現況觀察與建議</div>
-                    <div class="insight-grid" id="insightsGrid"></div>
+                    <div class="insight-grid" id="insightsGrid">
+                        <!-- Insights will be generated here -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -176,148 +710,594 @@
     <script>
         let excelData = [];
         let charts = {};
+        
+        const TARGET_FIELDS = ['廠別', '部門', '調整日期', '報工人員1', '班別', '調整原因'];
         const MAIN_ISSUES = ['漏報工', '數量錯誤', '未送啟始件(後補)', '其他/未分類'];
         
+        function excelDateToISOString(serial) {
+            if (typeof serial !== 'number' || isNaN(serial) || serial <= 0) return null;
+            const baseDate = new Date(Date.UTC(1899, 11, 30));
+            const date = new Date(baseDate.getTime() + (serial * 24 * 60 * 60 * 1000));
+            if (isNaN(date.getTime())) return null; 
+            const year = date.getUTCFullYear();
+            const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+            const day = String(date.getUTCDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // 設置預設日期：改為上個月的第一天到最後一天
         function setDefaultDates() {
             const today = new Date();
-            const firstDay = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-            const lastDay = new Date(today.getFullYear(), today.getMonth(), 0);
-            const fmt = (d) => d.toISOString().split('T')[0];
-            document.getElementById('startDate').value = fmt(firstDay);
-            document.getElementById('endDate').value = fmt(lastDay);
-        }
-
-        function setupFileUpload() {
-            const area = document.getElementById('uploadArea');
-            const input = document.getElementById('fileInput');
-            area.onclick = () => input.click();
-            input.onchange = (e) => {
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    const data = new Uint8Array(ev.target.result);
-                    const wb = XLSX.read(data, {type: 'array'});
-                    const sheet = wb.Sheets['紀錄單'] || wb.Sheets[wb.SheetNames[0]];
-                    excelData = XLSX.utils.sheet_to_json(sheet);
-                    document.getElementById('analyzeBtn').disabled = false;
-                    area.querySelector('h3').textContent = `已載入: ${e.target.files[0].name}`;
-                };
-                reader.readAsArrayBuffer(e.target.files[0]);
+            // 設為上個月的第一天 (月份 0-11, 所以當前月 1 月是 0, 上個月就是 -1)
+            const firstDayLastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+            // 設為當月的第一天再減去一天 = 上個月的最後一天
+            const lastDayLastMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+            
+            const formatDate = (date) => {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
             };
-        }
 
-        function analyzeData() {
-            const start = document.getElementById('startDate').value;
-            const end = document.getElementById('endDate').value;
-            const filtered = excelData.filter(row => {
-                const d = row['調整日期'];
-                if(!d) return false;
-                const ds = typeof d === 'number' ? new Date((d - 25569) * 86400000).toISOString().split('T')[0] : String(d);
-                return ds >= start && ds <= end;
+            document.getElementById('startDate').value = formatDate(firstDayLastMonth);
+            document.getElementById('endDate').value = formatDate(lastDayLastMonth);
+        }
+        
+        function setupFileUpload() {
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('fileInput');
+            const analyzeBtn = document.getElementById('analyzeBtn');
+            
+            uploadArea.addEventListener('click', () => fileInput.click());
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
             });
-            if(!filtered.length) return alert('此區間無數據');
-            document.getElementById('loading').classList.add('show');
-            setTimeout(() => {
-                const stats = processStats(filtered);
-                renderDashboard(stats, start, end);
-                document.getElementById('loading').classList.remove('show');
-                document.getElementById('dashboard').classList.add('show');
-            }, 100);
+            uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                if (e.dataTransfer.files.length > 0) handleFile(e.dataTransfer.files[0]);
+            });
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files && e.target.files.length > 0) handleFile(e.target.files[0]);
+            });
+            analyzeBtn.addEventListener('click', analyzeData);
         }
-
-        function processStats(data) {
-            const res = { 宗瑋廠: { 成型: {total:0, day:0, night:0, issues:{}, personnel:{}, raw:[]}, 組裝: {total:0, issues:{}} }, 博士廠: { 成型: {total:0, day:0, night:0, issues:{}, personnel:{}, raw:[]}, 組裝: {total:0, issues:{}} } };
-            data.forEach(row => {
-                const f = row['廠別']?.includes('宗瑋') ? '宗瑋廠' : (row['廠別']?.includes('博士') ? '博士廠' : null);
-                const d = row['部門']?.includes('成型') ? '成型' : (row['部門']?.includes('組裝') ? '組裝' : null);
-                if(!f || !d) return;
-                const target = res[f][d];
-                target.total++;
-                const reason = getReason(row);
-                target.issues[reason] = (target.issues[reason] || 0) + 1;
-                if(d === '成型') {
-                    row['班別']?.includes('夜') ? target.night++ : target.day++;
-                    target.raw.push(row);
-                    const p = row['報工人員1'];
-                    if(p) p.split('/').forEach(n => { const nm = n.trim(); if(nm) target.personnel[nm] = (target.personnel[nm] || 0) + 1; });
+        
+        function handleFile(file) {
+            if (!file.name.match(/\.(xlsx|xls)$/)) {
+                alert('請上傳Excel檔案（.xlsx或.xls格式）');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, {type: 'array', cellDates: false}); 
+                    let targetSheet = workbook.Sheets['紀錄單'] || workbook.Sheets[workbook.SheetNames[0]];
+                    excelData = XLSX.utils.sheet_to_json(targetSheet);
+                    document.getElementById('analyzeBtn').disabled = false;
+                    document.querySelector('.upload-area h3').textContent = `已上傳：${file.name}`;
+                    document.querySelector('.upload-area p').textContent = `共讀取 ${excelData.length} 筆資料`;
+                    showDataPreview();
+                } catch (error) {
+                    console.error('檔案讀取錯誤:', error);
+                    alert('檔案讀取失敗，請確認檔案格式正確');
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+        
+        function showDataPreview() {
+            if (excelData.length === 0) return;
+            const actualFields = Object.keys(excelData[0]);
+            let previewHtml = `
+                <div class="preview-section">
+                    <h4 style="color: #667eea; margin-bottom: 15px; font-size: 1.2rem; font-weight: 700;">📊 欄位檢測結果</h4>
+                    <p style="margin-bottom: 10px;"><strong>總資料筆數：</strong>${excelData.length} 筆</p>
+                    <p style="margin-bottom: 15px;"><strong>分析目標欄位：</strong>${TARGET_FIELDS.join('、').replace('報工人員1', '報工人員1 (支援/分隔符)')}</p>
+                    <div class="field-status">
+            `;
+            TARGET_FIELDS.forEach(field => {
+                const exists = actualFields.includes(field);
+                const sampleValue = exists ? (excelData[0][field] || '(空值)') : '(欄位不存在)';
+                previewHtml += `
+                    <div class="field-item ${exists ? '' : 'missing'}">
+                        <div class="field-name">${field} ${exists ? '✓' : '✗'}</div>
+                        <div class="field-value">${sampleValue}</div>
+                    </div>
+                `;
+            });
+            previewHtml += `
+                    </div>
+                </div>
+            `;
+            const uploadSection = document.querySelector('.upload-section');
+            let existingPreview = uploadSection.querySelector('.preview-section');
+            if (existingPreview) existingPreview.remove();
+            uploadSection.insertAdjacentHTML('beforeend', previewHtml);
+        }
+        
+        function filterDataByDate(data, startDate, endDate) {
+            return data.filter(row => {
+                let dateStr = null;
+                const adjustDate = row['調整日期'];
+                if (!adjustDate) return false;
+                try {
+                    if (typeof adjustDate === 'number') {
+                        dateStr = excelDateToISOString(adjustDate);
+                    } else if (typeof adjustDate === 'string') {
+                        const rawStr = adjustDate.trim();
+                        let parts = rawStr.match(/(\d{4})[/-](\d{1,2})[/-](\d{1,2})/);
+                        if (parts) {
+                            const [_, year, month, day] = parts;
+                            dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                        } else {
+                            const dateString = rawStr.replace(/[^\d]/g, '');
+                            if (dateString.length === 8) {
+                                dateStr = `${dateString.substr(0,4)}-${dateString.substr(4,2)}-${dateString.substr(6,2)}`;
+                            } else {
+                                const date = new Date(rawStr);
+                                if (!isNaN(date.getTime())) dateStr = date.toISOString().split('T')[0];
+                            }
+                        }
+                    } else if (adjustDate instanceof Date) {
+                        dateStr = adjustDate.toISOString().split('T')[0];
+                    }
+                    return dateStr && dateStr >= startDate && dateStr <= endDate;
+                } catch (error) {
+                    return false;
                 }
             });
-            return res;
         }
-
-        function getReason(row) {
-            const r = row['調整原因']?.toString() || '';
-            if(r.includes('漏報工')) return '漏報工';
-            if(r.includes('數量錯誤')) return '數量錯誤';
-            if(r.includes('未送啟始件')) return '未送啟始件(後補)';
-            return '其他/未分類';
-        }
-
-        function renderDashboard(stats, start, end) {
-            document.getElementById('dateRangeDisplay').textContent = `${start.replace(/-/g, '/')} ~ ${end.replace(/-/g, '/')} 異常分析`;
-            const moldingTotal = stats['宗瑋廠']['成型'].total + stats['博士廠']['成型'].total;
+        
+        function analyzeData() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            if (!startDate || !endDate) {
+                alert('請選擇統計起迄日期');
+                return;
+            }
+            if (excelData.length === 0) {
+                alert('請先上傳Excel檔案');
+                return;
+            }
             
-            ['宗瑋廠', '博士廠'].forEach(f => {
-                const pref = f === '宗瑋廠' ? 'zongwei' : 'boss';
-                const m = stats[f]['成型'];
-                document.getElementById(`${pref}MoldingTotal`).textContent = `${m.total} 次`;
-                document.getElementById(`${pref}MoldingDay`).textContent = `${m.day} 次 (${(m.day/moldingTotal*100).toFixed(1)}%)`;
-                document.getElementById(`${pref}MoldingNight`).textContent = `${m.night} 次 (${(m.night/moldingTotal*100).toFixed(1)}%)`;
-                renderIssues(`${pref}MoldingIssues`, m.issues, m.total);
-                
-                const a = stats[f]['組裝'];
-                document.getElementById(`${pref}AssemblyTotal`).textContent = `${a.total} 次`;
-                renderIssues(`${pref}AssemblyIssues`, a.issues, a.total);
-                
-                const pList = Object.entries(m.personnel).filter(x => x[1] > 3).sort((a,b)=>b[1]-a[1]);
-                document.getElementById(`${pref}MoldingPersonnelTitle`).textContent = `${f} - 關注人員 (${pList.length}位)`;
-                document.getElementById(`${pref}MoldingPersonnel`).innerHTML = pList.length ? `<ul class="personnel-list">` + pList.map(x => `<li class="personnel-item"><span>${x[0]}</span><span>${x[1]}次</span></li>`).join('') + `</ul>` : '✅ 表現穩定';
+            document.getElementById('loading').classList.add('show');
+            document.getElementById('dashboard').classList.remove('show');
+            
+            setTimeout(() => {
+                try {
+                    const filteredData = filterDataByDate(excelData, startDate, endDate);
+                    if (filteredData.length === 0) {
+                        alert(`在選定的日期範圍 (${startDate} ~ ${endDate}) 內沒有找到符合條件的數據。`);
+                        document.getElementById('dashboard').classList.remove('show');
+                    } else {
+                        generateAnalysisReport(filteredData, startDate, endDate);
+                        document.getElementById('dashboard').classList.add('show');
+                    }
+                    document.getElementById('loading').classList.remove('show');
+                } catch (error) {
+                    console.error('數據分析主流程錯誤:', error);
+                    alert('數據分析失敗：' + error.message);
+                    document.getElementById('loading').classList.remove('show');
+                }
+            }, 100); 
+        }
+        
+        function generateAnalysisReport(data, startDate, endDate) {
+            document.getElementById('dateRangeDisplay').textContent = 
+                `統計起迄日：${startDate.replace(/-/g, '/')} ~ ${endDate.replace(/-/g, '/')}`;
+            
+            const analysis = analyzeByFactoryAndDepartment(data);
+            
+            // 更新成型
+            updateMoldingStats(analysis);
+            
+            // --- 暫時取消組裝分析 (因筆數較少先不凸顯問題) ---
+            // updateAssemblyStats(analysis); 
+            document.getElementById('assemblySection').style.display = 'none'; 
+            
+            generateDetailedCharts(analysis);
+            updateInsights(analysis, data);
+        }
+        
+        function analyzeByFactoryAndDepartment(data) {
+            const result = { 宗瑋廠: { 成型: [], 組裝: [] }, 博士廠: { 成型: [], 組裝: [] } };
+            data.forEach(row => {
+                const factory = getFactory(row);
+                const department = getDepartment(row);
+                if (factory && department && result[factory][department]) {
+                    result[factory][department].push(row);
+                }
             });
-            renderCharts(stats);
-            renderInsights(stats);
-        }
-
-        function renderIssues(id, issues, total) {
-            const el = document.getElementById(id);
-            if(!total) return el.innerHTML = '✅ 無異常';
-            el.innerHTML = Object.entries(issues).sort((a,b)=>b[1]-a[1]).map(i => `<div class="stats-row"><span class="stat-label">${i[0]}</span><span class="stat-value">${i[1]}次</span></div>`).join('');
-        }
-
-        function renderCharts(stats) {
-            Object.keys(charts).forEach(k => charts[k].destroy());
-            ['zongwei', 'boss'].forEach(f => {
-                const data = stats[f === 'zongwei' ? '宗瑋廠' : '博士廠']['成型'];
-                const ctx = document.getElementById(`${f}MoldingDetailedChart`).getContext('2d');
-                const labels = MAIN_ISSUES.slice(0, 3);
-                charts[f] = new Chart(ctx, {
-                    type: 'bar',
-                    data: { labels, datasets: [
-                        { label: '日班', data: labels.map(l => data.raw.filter(r => !r['班別']?.includes('夜') && getReason(r) === l).length), backgroundColor: '#4A90E2' },
-                        { label: '夜班', data: labels.map(l => data.raw.filter(r => r['班別']?.includes('夜') && getReason(r) === l).length), backgroundColor: '#E94B8C' }
-                    ]},
-                    options: { responsive: true, maintainAspectRatio: false }
+            
+            const stats = {};
+            Object.keys(result).forEach(factory => {
+                stats[factory] = {};
+                Object.keys(result[factory]).forEach(dept => {
+                    const deptData = result[factory][dept];
+                    stats[factory][dept] = {
+                        total: deptData.length,
+                        dayShift: dept === '成型' ? deptData.filter(row => getShift(row) === '日').length : deptData.length,
+                        nightShift: dept === '成型' ? deptData.filter(row => getShift(row) === '夜').length : 0,
+                        issues: analyzeIssues(deptData),
+                        personnel: analyzePersonnel(deptData),
+                        detailedIssues: analyzeDetailedIssues(deptData, dept),
+                        rawData: deptData
+                    };
                 });
             });
+            return stats;
+        }
+        
+        function getFactory(row) {
+            const factory = row['廠別']?.toString();
+            if (factory?.includes('宗瑋')) return '宗瑋廠';
+            if (factory?.includes('博士')) return '博士廠';
+            return null;
+        }
+        
+        function getDepartment(row) {
+            const dept = row['部門']?.toString();
+            if (dept?.includes('成型')) return '成型';
+            if (dept?.includes('組裝')) return '組裝';
+            return null;
+        }
+        
+        function getShift(row) {
+            const shift = row['班別']?.toString();
+            if (shift?.includes('日')) return '日';
+            if (shift?.includes('夜')) return '夜';
+            return '';
+        }
+        
+        function analyzeIssues(data) {
+            const issues = {};
+            data.forEach(row => {
+                const reason = getReasonCategory(row);
+                issues[reason] = (issues[reason] || 0) + 1;
+            });
+            return issues;
         }
 
-        function renderInsights(stats) {
-            const zm = stats['宗瑋廠']['成型'], bm = stats['博士廠']['成型'];
-            const total = zm.total + bm.total;
-            const issues = {};
-            [zm, bm].forEach(d => Object.entries(d.issues).forEach(([k,v]) => issues[k] = (issues[k] || 0) + v));
-            const topIssue = Object.entries(issues).sort((a,b)=>b[1]-a[1])[0][0];
+        function analyzeDetailedIssues(data, dept) {
+            const detailedIssues = {
+                day: { '漏報工': 0, '數量錯誤': 0, '未送啟始件(後補)': 0, '其他/未分類': 0 },
+                night: { '漏報工': 0, '數量錯誤': 0, '未送啟始件(後補)': 0, '其他/未分類': 0 }
+            };
+            data.forEach(row => {
+                let shift = 'day';
+                if (dept === '成型') {
+                    const shiftStr = getShift(row);
+                    if (shiftStr === '夜') shift = 'night';
+                }
+                const reason = getReasonCategory(row);
+                detailedIssues[shift][reason]++;
+            });
+            return detailedIssues;
+        }
 
-            const zmPct = (zm.total/total*100).toFixed(1), bmPct = (bm.total/total*100).toFixed(1);
-            const nightTotal = zm.night + bm.night;
+        function getReasonCategory(row) {
+            const reasonStr = row['調整原因'] ? row['調整原因'].toString() : '';
+            if (reasonStr.includes('漏報工')) return '漏報工';
+            if (reasonStr.includes('數量錯誤')) return '數量錯誤';
+            if (reasonStr.includes('未送啟始件(後補)')) return '未送啟始件(後補)';
+            return '其他/未分類';
+        }
+        
+        function analyzePersonnel(data) {
+            const personnel = {};
+            data.forEach(row => {
+                const person1 = row['報工人員1'];
+                if (person1 && person1.toString().trim() !== '') {
+                    const names = person1.toString().split('/').map(name => name.trim()).filter(name => name !== '');
+                    names.forEach(personName => {
+                        if (!personnel[personName]) personnel[personName] = { total: 0 };
+                        personnel[personName].total++;
+                    });
+                }
+            });
+            const result = {};
+            Object.keys(personnel).forEach(person => {
+                if (personnel[person].total > 3) {
+                    result[person] = { total: personnel[person].total }; 
+                }
+            });
+            return result;
+        }
+        
+        function updateMoldingStats(analysis) {
+            const zongweiMolding = analysis['宗瑋廠']['成型'];
+            const bossMolding = analysis['博士廠']['成型'];
+            const moldingTotalCombined = zongweiMolding.total + bossMolding.total;
 
-            const recs = [
-                { title: "SOP 執行確認", content: "部門主管應針對 **重點關注人員** 進行現場查核，確保報工步驟與實際作業流程同步。" },
-                { title: "即時問題反饋", content: "若遇系統連線不穩，應第一時間通知技術員，避免事後因憑記憶補單造成的數據偏差。" },
-                { title: "領班面審報工制", content: `針對 **${topIssue}** 問題，應落實面審機制：要求作業員於下班前，攜帶紙本工單與 iPad 至技術員/領班處，當面核對生產數與報工數，確認無誤後再行下班。` }
+            // 宗瑋廠
+            document.getElementById('zongweiMoldingTotal').textContent = `${zongweiMolding.total} 次`;
+            const zongweiDayPct = moldingTotalCombined > 0 ? ((zongweiMolding.dayShift / moldingTotalCombined) * 100).toFixed(1) : 0;
+            const zongweiNightPct = moldingTotalCombined > 0 ? ((zongweiMolding.nightShift / moldingTotalCombined) * 100).toFixed(1) : 0;
+            document.getElementById('zongweiMoldingDay').textContent = `${zongweiMolding.dayShift} 次 (${zongweiDayPct}%)`;
+            document.getElementById('zongweiMoldingNight').textContent = `${zongweiMolding.nightShift} 次 (${zongweiNightPct}%)`;
+            updateIssuesDisplay('zongweiMoldingIssues', zongweiMolding.issues, zongweiMolding.total);
+            
+            // 博士廠
+            document.getElementById('bossMoldingTotal').textContent = `${bossMolding.total} 次`;
+            const bossDayPct = moldingTotalCombined > 0 ? ((bossMolding.dayShift / moldingTotalCombined) * 100).toFixed(1) : 0;
+            const bossNightPct = moldingTotalCombined > 0 ? ((bossMolding.nightShift / moldingTotalCombined) * 100).toFixed(1) : 0;
+            document.getElementById('bossMoldingDay').textContent = `${bossMolding.dayShift} 次 (${bossDayPct}%)`;
+            document.getElementById('bossMoldingNight').textContent = `${bossMolding.nightShift} 次 (${bossNightPct}%)`;
+            updateIssuesDisplay('bossMoldingIssues', bossMolding.issues, bossMolding.total);
+
+            updatePersonnelDisplay('zongweiMoldingPersonnel', 'zongweiMoldingPersonnelTitle', analysis['宗瑋廠']['成型'].personnel, '宗瑋廠 - 發生次數>3次人員');
+            updatePersonnelDisplay('bossMoldingPersonnel', 'bossMoldingPersonnelTitle', analysis['博士廠']['成型'].personnel, '博士廠 - 發生次數>3次人員');
+        }
+        
+        function updateIssuesDisplay(elementId, issues, total) {
+            const element = document.getElementById(elementId);
+            if (total === 0) {
+                element.innerHTML = '<div style="text-align: center; color: #28a745; font-weight: 600; padding: 10px; font-size: 1.1rem;">✅ 無異常記錄</div>';
+                return;
+            }
+            let html = '';
+            const issueArray = Object.keys(issues).map(issue => ({
+                name: issue,
+                count: issues[issue]
+            })).sort((a, b) => b.count - a.count);
+
+            issueArray.forEach(issue => {
+                const count = issue.count;
+                const percentage = total > 0 ? ((count / total) * 100).toFixed(1) : 0;
+                html += `
+                    <div class="stats-row">
+                        <span class="stat-label">${issue.name}</span>
+                        <span class="stat-value">${count} 次 (${percentage}%)</span>
+                    </div>
+                `;
+            });
+            element.innerHTML = html;
+        }
+        
+        function updatePersonnelDisplay(elementId, titleId, personnel, titleText) {
+            const element = document.getElementById(elementId);
+            const titleElement = document.getElementById(titleId);
+            const personnelArray = Object.keys(personnel).map(name => ({
+                name: name,
+                count: personnel[name].total
+            })).sort((a, b) => b.count - a.count);
+            
+            const totalPersonnel = Object.keys(personnel).length;
+            titleElement.textContent = `${titleText} (${totalPersonnel}位)`;
+
+            if (personnelArray.length === 0) {
+                element.innerHTML = '<div class="no-personnel">✅ 無人員發生次數大於3次</div>';
+                return;
+            }
+            
+            let html = '<div class="personnel-grid"><ul class="personnel-list">';
+            personnelArray.forEach(person => {
+                html += `
+                    <li class="personnel-item">
+                        <span class="personnel-name">${person.name}</span>
+                        <span class="personnel-count">${person.count}次</span>
+                    </li>`;
+            });
+            html += '</ul></div>';
+            element.innerHTML = html;
+        }
+        
+        function generateDetailedCharts(analysis) {
+            Object.keys(charts).forEach(key => { if (charts[key]) charts[key].destroy(); });
+            
+            const zongweiData = analysis['宗瑋廠']['成型'].detailedIssues;
+            const bossData = analysis['博士廠']['成型'].detailedIssues;
+            const chartLabels = MAIN_ISSUES.slice(0, 3);
+            
+            let globalMax = 0;
+            chartLabels.forEach(issue => {
+                globalMax = Math.max(globalMax, zongweiData.day[issue], zongweiData.night[issue]);
+                globalMax = Math.max(globalMax, bossData.day[issue], bossData.night[issue]);
+            });
+            let displayMax = globalMax < 5 ? 5 : Math.ceil((globalMax + 1) / 5) * 5;
+
+            charts['zongweiDetailed'] = new Chart(document.getElementById('zongweiMoldingDetailedChart').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: chartLabels,
+                    datasets: [
+                        { label: '日班', data: chartLabels.map(issue => zongweiData.day[issue]), backgroundColor: 'rgba(75, 192, 192, 0.8)' },
+                        { label: '夜班', data: chartLabels.map(issue => zongweiData.night[issue]), backgroundColor: 'rgba(255, 159, 64, 0.8)' }
+                    ]
+                },
+                options: getDetailedChartOptions(displayMax)
+            });
+            
+            charts['bossDetailed'] = new Chart(document.getElementById('bossMoldingDetailedChart').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: chartLabels,
+                    datasets: [
+                        { label: '日班', data: chartLabels.map(issue => bossData.day[issue]), backgroundColor: 'rgba(75, 192, 192, 0.8)' },
+                        { label: '夜班', data: chartLabels.map(issue => bossData.night[issue]), backgroundColor: 'rgba(255, 159, 64, 0.8)' }
+                    ]
+                },
+                options: getDetailedChartOptions(displayMax)
+            });
+        }
+        
+        function getDetailedChartOptions(globalMax) {
+            return {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: true, position: 'top' },
+                    tooltip: { mode: 'index', intersect: false }
+                },
+                scales: {
+                    y: { beginAtZero: true, max: globalMax },
+                    x: { ticks: { font: { size: 14 } } }
+                }
+            };
+        }
+        
+        function updateInsights(analysis, rawData) {
+            const totalIssues = Object.values(analysis).reduce((sum, factory) => sum + Object.values(factory).reduce((deptSum, dept) => deptSum + dept.total, 0), 0);
+            const allIssues = {};
+            Object.values(analysis).forEach(factory => {
+                Object.values(factory).forEach(dept => {
+                    Object.keys(dept.issues).forEach(issue => {
+                        allIssues[issue] = (allIssues[issue] || 0) + dept.issues[issue];
+                    });
+                });
+            });
+            
+            const insights = [
+                { title: "🔧 成型班別 & 兩廠總體趨勢", fn: generateMergedShiftTrendAnalysis }, 
+                { title: "⚠️ 主要問題 & 重點人員分析", fn: generateMergedIssuePersonnelAnalysis },    
+                // { title: "📦 組裝部門表現分析", fn: generateAssemblyAnalysis }, 
+                { title: "💡 結論與流程改善方向", fn: generateRecommendations } 
             ];
-            if (nightTotal > total * 0.4) recs[1] = { title: "夜班強化監督", content: "夜班異常比例較高，技術員應於下班前 30 分鐘加強巡查，確保夜班報工數據之準確度。" };
+            
+            let html = '';
+            const filteredInsights = insights.filter(insight => insight.condition !== false);
 
-            const grid = document.getElementById('insightsGrid');
-            grid.innerHTML = `
-                <div class="insight-item">
-                    <h4>🔧 成型廠區趨勢觀察</h4>
-                    <div class="insight-content-box"><p>本月成型總異常 **${total}** 次。
+            filteredInsights.forEach((insight, index) => { 
+                const result = insight.fn(analysis, totalIssues, allIssues); 
+                let contentHtml;
+                
+                if (result.isMerged) {
+                    contentHtml = result.htmlContent;
+                } else if (result.isStructured) {
+                    const listHtml = result.list.map((item) => `<li>${item.title}： ${item.content.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')}</li>`).join('');
+                    contentHtml = `<p><b>${result.summary}</b></p><ul>${listHtml}</ul>`;
+                } else {
+                    contentHtml = `<p>${result.summary.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')}</p>`;
+                }
+                
+                const spanClass = (filteredInsights.length % 2 === 1 && index === filteredInsights.length - 1) ? ' span-full' : '';
+                html += `<div class="insight-item${spanClass}"><h4>${insight.title}</h4><div class="insight-content-box">${contentHtml}</div></div>`;
+            });
+            document.getElementById('insightsGrid').innerHTML = html;
+        }
+        
+        function generateMergedShiftTrendAnalysis(analysis, totalIssues, allIssues) {
+            const shiftResult = generateShiftAnalysis(analysis, totalIssues, allIssues);
+            const trendResult = generateTrendAnalysis(analysis, totalIssues, allIssues);
+            const combinedHtml = `<p>${shiftResult.summary.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')}</p><hr style="margin: 15px 0; border-top: 2px solid #e0e7ff;"><p>${trendResult.summary.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')}</p>`;
+            return { htmlContent: combinedHtml, isMerged: true };
+        }
+
+        function generateMergedIssuePersonnelAnalysis(analysis, totalIssues, allIssues) {
+            const issueResult = generateIssueAnalysis(analysis, totalIssues, allIssues);
+            const personnelResult = generatePersonnelAnalysis(analysis, totalIssues, allIssues);
+            const combinedHtml = `<p>${issueResult.summary.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')}</p><hr style="margin: 15px 0; border-top: 2px solid #e0e7ff;"><p>${personnelResult.summary.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')}</p>`;
+            return { htmlContent: combinedHtml, isMerged: true };
+        }
+
+        function generateShiftAnalysis(analysis, totalIssues, allIssues) {
+            const zongwei = analysis['宗瑋廠']['成型'];
+            const boss = analysis['博士廠']['成型'];
+            const moldingTotalCombined = zongwei.total + boss.total;
+            
+            const zongweiTotalPct = moldingTotalCombined > 0 ? ((zongwei.total / moldingTotalCombined) * 100).toFixed(1) : 0;
+            const bossTotalPct = moldingTotalCombined > 0 ? ((boss.total / moldingTotalCombined) * 100).toFixed(1) : 0;
+
+            let result = `**宗瑋廠** 成型部門佔總異常 **${zongweiTotalPct}%**，**博士廠** 佔 **${bossTotalPct}%**。<br>`;
+            
+            let maxCount = -1, highShiftFactory = '', highShift = '';
+            const countData = [
+                { f: '宗瑋廠', s: '夜班', c: zongwei.nightShift },
+                { f: '宗瑋廠', s: '日班', c: zongwei.dayShift },
+                { f: '博士廠', s: '夜班', c: boss.nightShift },
+                { f: '博士廠', s: '日班', c: boss.dayShift }
+            ];
+            countData.forEach(d => { if (d.c > maxCount) { maxCount = d.c; highShiftFactory = d.f; highShift = d.s; } });
+
+            if (highShiftFactory && maxCount > 0) {
+                 result += `結論：**${highShiftFactory}** 的 **${highShift}** 佔異常次數最多。`;
+            }
+            return { summary: result, isStructured: false };
+        }
+        
+        function generateIssueAnalysis(analysis, totalIssues, allIssues) { 
+            if (totalIssues === 0) return { summary: "本期間內無異常記錄。", isStructured: false };
+            const leakPct = allIssues['漏報工'] ? ((allIssues['漏報工'] / totalIssues) * 100).toFixed(1) : 0;
+            const quantityPct = allIssues['數量錯誤'] ? ((allIssues['數量錯誤'] / totalIssues) * 100).toFixed(1) : 0;
+            let summary = `本期總異常 **${totalIssues}** 次：**漏報工** (${leakPct}%)、**數量錯誤** (${quantityPct}%)。`;
+            return { summary: summary, isStructured: false };
+        }
+
+        function generatePersonnelAnalysis(analysis, totalIssues, allIssues) {
+            let totalHighFreq = 0;
+            Object.values(analysis).forEach(factory => Object.values(factory).forEach(dept => { totalHighFreq += Object.keys(dept.personnel).length; }));
+            if (totalHighFreq === 0) return { summary: "人員報工表現穩定，無高頻異常人員。", isStructured: false };
+            return { summary: `本期共計 **${totalHighFreq}** 位人員發生次數>3次，應加強操作指導。`, isStructured: false };
+        }
+
+        function generateTrendAnalysis(analysis, totalIssues, allIssues) {
+            const zongweiTotal = analysis['宗瑋廠']['成型'].total + analysis['宗瑋廠']['組裝'].total;
+            const bossTotal = analysis['博士廠']['成型'].total + analysis['博士廠']['組裝'].total;
+            return { summary: `兩廠異常總數：宗瑋廠 **${zongweiTotal} 次**，博士廠 **${bossTotal} 次**。`, isStructured: false };
+        }
+
+        function generateRecommendations(analysis, totalIssues, allIssues) {
+            if (totalIssues === 0) return { summary: "表現優異，建議維持。", isStructured: false };
+            
+            const listItems = [
+                { 
+                    title: "SOP 執行確認", 
+                    content: "部門主管應針對 **重點關注人員** 進行現場查核，確保報工步驟與實際作業流程同步。"
+                },
+                {
+                    title: "即時問題反饋", 
+                    content: "建立報工異常回報機制，若遇 **系統、網路** 等外部因素導致無法即時報工，應於第一時間通知現場主管。"
+                },
+                {
+                    title: "數據即時性與現場核對", 
+                    content: "建議作業員下班前向技術員或主管回報生產數、報工數，確認無誤後才下工。"
+                }
+            ];
+            return { summary: "建議改善方向：", list: listItems, isStructured: true };
+        }
+
+        async function exportPdf() {
+            const exportBtn = document.getElementById('exportPdfBtn');
+            const pdfContentWrapper = document.getElementById('pdfContentWrapper');
+            const moldingSection = document.getElementById('moldingSection');
+            const insightsSection = document.getElementById('insightsSection');
+            const pdfTitle = document.getElementById('pdfTitle');
+
+            exportBtn.style.display = 'none';
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'mm', 'a4');
+
+            try {
+                pdfTitle.style.display = 'block';
+                // 只匯出成型與洞察
+                moldingSection.style.display = 'block';
+                insightsSection.style.display = 'block';
+
+                const canvas = await html2canvas(pdfContentWrapper, { scale: 2, useCORS: true });
+                const img = canvas.toDataURL('image/jpeg', 0.9);
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+                
+                pdf.addImage(img, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+                pdf.save(`MES分析報告_${document.getElementById('startDate').value}.pdf`);
+            } catch (err) {
+                console.error(err);
+            } finally {
+                pdfTitle.style.display = 'none';
+                exportBtn.style.display = 'block';
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            setDefaultDates();
+            setupFileUpload();
+            document.getElementById('exportPdfBtn').addEventListener('click', exportPdf);
+        });
+    </script>
+</body>
+</html>
