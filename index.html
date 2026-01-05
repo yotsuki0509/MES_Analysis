@@ -1285,9 +1285,9 @@
         function generateRecommendations(analysis, total) {
             if (total === 0) return { summary: "表現優異，建議維持。" };
             return { summary: "建議改善方向：", isStructured: true, list: [
-                { title: "SOP 執行確認", content: "主管應針對高頻異常人員進行現場查核。" },
-                { title: "即時回報", content: "系統故障應第一時間通知，避免後補導致數據錯誤。" },
-                { title: "數量核對", content: "落實每日生產數與報工數之比對機制。" }
+                { title: "SOP 執行確認", content: "主管應針對異常人員進行現場查核或訓練。" },
+                { title: "即時回報", content: "系統使用上有問題應第一時間通知，避免流程錯誤。" },
+                { title: "數量核對", content: "落實每日生產數與實際報工數之比對流程。" }
             ]};
         }
 
