@@ -4,10 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MES現場報工異常分析平台</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- 引入外部函式庫 -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* 基礎樣式和響應式設計 */
@@ -20,7 +21,7 @@
         body {
             font-family: 'Inter', 'Microsoft YaHei', 'PingFang TC', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 10vh;
+            min-height: 100vh;
             padding: 20px;
             font-size: 1.0rem; 
         }
@@ -642,7 +643,7 @@
                     </div>
                 </div>
                 
-                <!-- 組裝部門 (已隱藏，如需恢復請刪除 style="display:none") -->
+                <!-- 組裝部門 -->
                 <div id="assemblySection">
                     <div class="section-subtitle">📦 組裝部門現況</div>
                     <div class="factory-row">
@@ -655,8 +656,12 @@
                                     <span class="stat-value" id="zongweiAssemblyTotal">0 次</span>
                                 </div>
                                 <div class="stats-row">
-                                    <span class="stat-label">工作班別</span>
-                                    <span class="stat-value">日班作業</span>
+                                    <span class="stat-label">日班發生次數</span>
+                                    <span class="stat-value" id="zongweiAssemblyDay">0 次</span>
+                                </div>
+                                <div class="stats-row">
+                                    <span class="stat-label">夜班發生次數</span>
+                                    <span class="stat-value" id="zongweiAssemblyNight">0 次</span>
                                 </div>
                             </div>
                             <div class="stats-section">
@@ -674,8 +679,12 @@
                                     <span class="stat-value" id="bossAssemblyTotal">0 次</span>
                                 </div>
                                 <div class="stats-row">
-                                    <span class="stat-label">工作班別</span>
-                                    <span class="stat-value">日班作業</span>
+                                    <span class="stat-label">日班發生次數</span>
+                                    <span class="stat-value" id="bossAssemblyDay">0 次</span>
+                                </div>
+                                <div class="stats-row">
+                                    <span class="stat-label">夜班發生次數</span>
+                                    <span class="stat-value" id="bossAssemblyNight">0 次</span>
                                 </div>
                             </div>
                             <div class="stats-section">
@@ -725,12 +734,10 @@
             return `${year}-${month}-${day}`;
         }
 
-        // 設置預設日期：改為上個月的第一天到最後一天
+        // 設置預設日期
         function setDefaultDates() {
             const today = new Date();
-            // 設為上個月的第一天 (月份 0-11, 所以當前月 1 月是 0, 上個月就是 -1)
             const firstDayLastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-            // 設為當月的第一天再減去一天 = 上個月的最後一天
             const lastDayLastMonth = new Date(today.getFullYear(), today.getMonth(), 0);
             
             const formatDate = (date) => {
@@ -767,6 +774,12 @@
         }
         
         function handleFile(file) {
+            // 安全性檢查：確保 XLSX 已載入
+            if (typeof XLSX === 'undefined') {
+                alert('核心函式庫正在載入中，請稍候幾秒再試。');
+                return;
+            }
+
             if (!file.name.match(/\.(xlsx|xls)$/)) {
                 alert('請上傳Excel檔案（.xlsx或.xls格式）');
                 return;
@@ -784,7 +797,7 @@
                     showDataPreview();
                 } catch (error) {
                     console.error('檔案讀取錯誤:', error);
-                    alert('檔案讀取失敗，請確認檔案格式正確');
+                    alert('檔案讀取失敗，請確認檔案格式正確。');
                 }
             };
             reader.readAsArrayBuffer(file);
@@ -797,7 +810,7 @@
                 <div class="preview-section">
                     <h4 style="color: #667eea; margin-bottom: 15px; font-size: 1.2rem; font-weight: 700;">📊 欄位檢測結果</h4>
                     <p style="margin-bottom: 10px;"><strong>總資料筆數：</strong>${excelData.length} 筆</p>
-                    <p style="margin-bottom: 15px;"><strong>分析目標欄位：</strong>${TARGET_FIELDS.join('、').replace('報工人員1', '報工人員1 (支援/分隔符)')}</p>
+                    <p style="margin-bottom: 15px;"><strong>分析目標欄位：</strong>${TARGET_FIELDS.join('、').replace('報工人員1', '報工人員1')}</p>
                     <div class="field-status">
             `;
             TARGET_FIELDS.forEach(field => {
@@ -893,12 +906,8 @@
             
             const analysis = analyzeByFactoryAndDepartment(data);
             
-            // 更新成型
             updateMoldingStats(analysis);
-            
-            // --- 暫時取消組裝分析 (因筆數較少先不凸顯問題) ---
-            // updateAssemblyStats(analysis); 
-            document.getElementById('assemblySection'); 
+            updateAssemblyStats(analysis); 
             
             generateDetailedCharts(analysis);
             updateInsights(analysis, data);
@@ -921,8 +930,8 @@
                     const deptData = result[factory][dept];
                     stats[factory][dept] = {
                         total: deptData.length,
-                        dayShift: dept === '成型' ? deptData.filter(row => getShift(row) === '日').length : deptData.length,
-                        nightShift: dept === '成型' ? deptData.filter(row => getShift(row) === '夜').length : 0,
+                        dayShift: deptData.filter(row => getShift(row) === '日' || getShift(row) === '').length,
+                        nightShift: deptData.filter(row => getShift(row) === '夜').length,
                         issues: analyzeIssues(deptData),
                         personnel: analyzePersonnel(deptData),
                         detailedIssues: analyzeDetailedIssues(deptData, dept),
@@ -970,10 +979,9 @@
             };
             data.forEach(row => {
                 let shift = 'day';
-                if (dept === '成型') {
-                    const shiftStr = getShift(row);
-                    if (shiftStr === '夜') shift = 'night';
-                }
+                const shiftStr = getShift(row);
+                if (shiftStr === '夜') shift = 'night';
+                
                 const reason = getReasonCategory(row);
                 detailedIssues[shift][reason]++;
             });
@@ -1032,6 +1040,26 @@
 
             updatePersonnelDisplay('zongweiMoldingPersonnel', 'zongweiMoldingPersonnelTitle', analysis['宗瑋廠']['成型'].personnel, '宗瑋廠 - 發生次數>3次人員');
             updatePersonnelDisplay('bossMoldingPersonnel', 'bossMoldingPersonnelTitle', analysis['博士廠']['成型'].personnel, '博士廠 - 發生次數>3次人員');
+        }
+
+        function updateAssemblyStats(analysis) {
+            const zongweiAssembly = analysis['宗瑋廠']['組裝'];
+            const bossAssembly = analysis['博士廠']['組裝'];
+
+            // 宗瑋廠
+            document.getElementById('zongweiAssemblyTotal').textContent = `${zongweiAssembly.total} 次`;
+            document.getElementById('zongweiAssemblyDay').textContent = `${zongweiAssembly.dayShift} 次`;
+            document.getElementById('zongweiAssemblyNight').textContent = `${zongweiAssembly.nightShift} 次`;
+            updateIssuesDisplay('zongweiAssemblyIssues', zongweiAssembly.issues, zongweiAssembly.total);
+            
+            // 博士廠
+            document.getElementById('bossAssemblyTotal').textContent = `${bossAssembly.total} 次`;
+            document.getElementById('bossAssemblyDay').textContent = `${bossAssembly.dayShift} 次`;
+            document.getElementById('bossAssemblyNight').textContent = `${bossAssembly.nightShift} 次`;
+            updateIssuesDisplay('bossAssemblyIssues', bossAssembly.issues, bossAssembly.total);
+
+            updatePersonnelDisplay('zongweiAssemblyPersonnel', 'zongweiAssemblyPersonnelTitle', analysis['宗瑋廠']['組裝'].personnel, '宗瑋廠 - 發生次數>3次人員');
+            updatePersonnelDisplay('bossAssemblyPersonnel', 'bossAssemblyPersonnelTitle', analysis['博士廠']['組裝'].personnel, '博士廠 - 發生次數>3次人員');
         }
         
         function updateIssuesDisplay(elementId, issues, total) {
@@ -1155,7 +1183,6 @@
             const insights = [
                 { title: "🔧 成型班別 & 兩廠總體趨勢", fn: generateMergedShiftTrendAnalysis }, 
                 { title: "⚠️ 主要問題 & 重點人員分析", fn: generateMergedIssuePersonnelAnalysis },    
-                // { title: "📦 組裝部門表現分析", fn: generateAssemblyAnalysis }, 
                 { title: "💡 結論與流程改善方向", fn: generateRecommendations } 
             ];
             
@@ -1255,7 +1282,7 @@
                 },
                 {
                     title: "數據即時性與現場核對", 
-                    content: "建議每日抽查 **機台計數器** 與 **MES報工數** 是否一致，從源頭杜絕人為偏差。"
+                    content: "建議每日比對 **前台生產數量** 與 **作業員報工數** 是否一致，從源頭杜絕人為偏差。"
                 }
             ];
             return { summary: "建議改善方向：", list: listItems, isStructured: true };
@@ -1264,8 +1291,6 @@
         async function exportPdf() {
             const exportBtn = document.getElementById('exportPdfBtn');
             const pdfContentWrapper = document.getElementById('pdfContentWrapper');
-            const moldingSection = document.getElementById('moldingSection');
-            const insightsSection = document.getElementById('insightsSection');
             const pdfTitle = document.getElementById('pdfTitle');
 
             exportBtn.style.display = 'none';
@@ -1274,9 +1299,6 @@
 
             try {
                 pdfTitle.style.display = 'block';
-                // 只匯出成型與洞察
-                moldingSection.style.display = 'block';
-                insightsSection.style.display = 'block';
 
                 const canvas = await html2canvas(pdfContentWrapper, { scale: 2, useCORS: true });
                 const img = canvas.toDataURL('image/jpeg', 0.9);
@@ -1293,11 +1315,16 @@
             }
         }
         
-        document.addEventListener('DOMContentLoaded', function() {
+        window.onload = function() {
             setDefaultDates();
             setupFileUpload();
             document.getElementById('exportPdfBtn').addEventListener('click', exportPdf);
-        });
+            
+            // 監聽外部資源載入情況 (選配)
+            if (typeof XLSX === 'undefined') {
+                console.log('XLSX library not found, retrying...');
+            }
+        };
     </script>
 </body>
 </html>
