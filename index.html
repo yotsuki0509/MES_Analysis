@@ -483,6 +483,64 @@
             color: #666;
             font-size: 0.9rem;
         }
+
+        /* 匯出選單彈窗樣式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 15px;
+            width: 400px;
+            max-width: 90%;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        .modal-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #4A5FC7;
+            text-align: center;
+        }
+        .checkbox-group {
+            margin-bottom: 25px;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 10px;
+            border-radius: 8px;
+            background: #f8f9ff;
+            cursor: pointer;
+        }
+        .checkbox-item:hover {
+            background: #f0f2ff;
+        }
+        .checkbox-item input {
+            width: 20px;
+            height: 20px;
+            margin-right: 15px;
+        }
+        .modal-btns {
+            display: flex;
+            gap: 10px;
+        }
+        .cancel-btn {
+            background: #eee;
+            color: #666;
+        }
         
         @media (min-width: 1024px) {
             .insight-grid {
@@ -560,17 +618,21 @@
         
         <div class="dashboard" id="dashboard">
             <div style="text-align: right; margin-bottom: 20px;">
-                <button id="exportPdfBtn" class="analyze-btn">匯出報表為PDF</button>
+                <button id="openExportModalBtn" class="analyze-btn">匯出報表為PDF</button>
             </div>
             
-            <div id="pdfContentWrapper">
-                <div id="pdfTitle" style="display:none; text-align:center; font-size: 40px; font-weight: bold; margin-bottom: 20px;">
-                    MES現場報工異常分析
+            <!-- 匯出內容包裝器 -->
+            <div id="pdfContentWrapper" class="bg-white p-2">
+                <!-- PDF 專用標題與日期 -->
+                <div id="pdfTitleHeader" style="display:none; text-align:center; padding: 20px 0;">
+                    <h1 style="font-size: 32px; font-weight: bold; margin-bottom: 10px;">MES現場報工異常分析報告</h1>
+                    <div style="font-size: 18px; color: #666;" id="pdfDateDisplay"></div>
                 </div>
+
                 <div class="date-range-display" id="dateRangeDisplay"></div>
                 
-                <!-- 成型部門 -->
-                <div id="moldingSection">
+                <!-- 區塊1: 成型部門 -->
+                <div id="moldingBlock">
                     <div class="section-subtitle">🔧 成型部門現況</div>
                     <div class="factory-row">
                         <div class="factory-card">
@@ -643,8 +705,8 @@
                     </div>
                 </div>
                 
-                <!-- 組裝部門 -->
-                <div id="assemblySection">
+                <!-- 區塊2: 組裝部門 -->
+                <div id="assemblyBlock" class="mt-8">
                     <div class="section-subtitle">📦 組裝部門現況</div>
                     <div class="factory-row">
                         <div class="factory-card">
@@ -706,12 +768,34 @@
                     </div>
                 </div>
                 
-                <div class="insights" id="insightsSection">
+                <!-- 區塊3: 觀察建議 -->
+                <div class="insights mt-8" id="insightsSection">
                     <div class="section-subtitle">📊 客觀現況觀察與建議</div>
                     <div class="insight-grid" id="insightsGrid">
-                        <!-- Insights will be generated here -->
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 匯出選項彈窗 -->
+    <div id="exportModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-title">📄 PDF 匯出內容選擇</div>
+            <div class="checkbox-group">
+                <label class="checkbox-item">
+                    <input type="checkbox" id="checkMolding" checked> 顯示「成型部門」區塊
+                </label>
+                <label class="checkbox-item">
+                    <input type="checkbox" id="checkAssembly" checked> 顯示「組裝部門」區塊
+                </label>
+                <label class="checkbox-item">
+                    <input type="checkbox" id="checkInsights" checked> 顯示「觀察與建議」區塊
+                </label>
+            </div>
+            <div class="modal-btns">
+                <button id="cancelPdfBtn" class="analyze-btn cancel-btn flex-1">取消</button>
+                <button id="confirmPdfBtn" class="analyze-btn flex-1">確認匯出</button>
             </div>
         </div>
     </div>
@@ -734,7 +818,6 @@
             return `${year}-${month}-${day}`;
         }
 
-        // 設置預設日期
         function setDefaultDates() {
             const today = new Date();
             const firstDayLastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
@@ -774,7 +857,6 @@
         }
         
         function handleFile(file) {
-            // 安全性檢查：確保 XLSX 已載入
             if (typeof XLSX === 'undefined') {
                 alert('核心函式庫正在載入中，請稍候幾秒再試。');
                 return;
@@ -810,7 +892,7 @@
                 <div class="preview-section">
                     <h4 style="color: #667eea; margin-bottom: 15px; font-size: 1.2rem; font-weight: 700;">📊 欄位檢測結果</h4>
                     <p style="margin-bottom: 10px;"><strong>總資料筆數：</strong>${excelData.length} 筆</p>
-                    <p style="margin-bottom: 15px;"><strong>分析目標欄位：</strong>${TARGET_FIELDS.join('、').replace('報工人員1', '報工人員1')}</p>
+                    <p style="margin-bottom: 15px;"><strong>分析目標欄位：</strong>${TARGET_FIELDS.join('、')}</p>
                     <div class="field-status">
             `;
             TARGET_FIELDS.forEach(field => {
@@ -823,10 +905,7 @@
                     </div>
                 `;
             });
-            previewHtml += `
-                    </div>
-                </div>
-            `;
+            previewHtml += `</div></div>`;
             const uploadSection = document.querySelector('.upload-section');
             let existingPreview = uploadSection.querySelector('.preview-section');
             if (existingPreview) existingPreview.remove();
@@ -901,8 +980,9 @@
         }
         
         function generateAnalysisReport(data, startDate, endDate) {
-            document.getElementById('dateRangeDisplay').textContent = 
-                `統計起迄日：${startDate.replace(/-/g, '/')} ~ ${endDate.replace(/-/g, '/')}`;
+            const rangeStr = `${startDate.replace(/-/g, '/')} ~ ${endDate.replace(/-/g, '/')}`;
+            document.getElementById('dateRangeDisplay').textContent = `統計起迄日：${rangeStr}`;
+            document.getElementById('pdfDateDisplay').textContent = `統計區間：${rangeStr}`;
             
             const analysis = analyzeByFactoryAndDepartment(data);
             
@@ -978,10 +1058,7 @@
                 night: { '漏報工': 0, '數量錯誤': 0, '未送啟始件(後補)': 0, '其他/未分類': 0 }
             };
             data.forEach(row => {
-                let shift = 'day';
-                const shiftStr = getShift(row);
-                if (shiftStr === '夜') shift = 'night';
-                
+                let shift = getShift(row) === '夜' ? 'night' : 'day';
                 const reason = getReasonCategory(row);
                 detailedIssues[shift][reason]++;
             });
@@ -1010,9 +1087,7 @@
             });
             const result = {};
             Object.keys(personnel).forEach(person => {
-                if (personnel[person].total > 3) {
-                    result[person] = { total: personnel[person].total }; 
-                }
+                if (personnel[person].total > 3) result[person] = { total: personnel[person].total }; 
             });
             return result;
         }
@@ -1022,7 +1097,6 @@
             const bossMolding = analysis['博士廠']['成型'];
             const moldingTotalCombined = zongweiMolding.total + bossMolding.total;
 
-            // 宗瑋廠
             document.getElementById('zongweiMoldingTotal').textContent = `${zongweiMolding.total} 次`;
             const zongweiDayPct = moldingTotalCombined > 0 ? ((zongweiMolding.dayShift / moldingTotalCombined) * 100).toFixed(1) : 0;
             const zongweiNightPct = moldingTotalCombined > 0 ? ((zongweiMolding.nightShift / moldingTotalCombined) * 100).toFixed(1) : 0;
@@ -1030,7 +1104,6 @@
             document.getElementById('zongweiMoldingNight').textContent = `${zongweiMolding.nightShift} 次 (${zongweiNightPct}%)`;
             updateIssuesDisplay('zongweiMoldingIssues', zongweiMolding.issues, zongweiMolding.total);
             
-            // 博士廠
             document.getElementById('bossMoldingTotal').textContent = `${bossMolding.total} 次`;
             const bossDayPct = moldingTotalCombined > 0 ? ((bossMolding.dayShift / moldingTotalCombined) * 100).toFixed(1) : 0;
             const bossNightPct = moldingTotalCombined > 0 ? ((bossMolding.nightShift / moldingTotalCombined) * 100).toFixed(1) : 0;
@@ -1046,13 +1119,11 @@
             const zongweiAssembly = analysis['宗瑋廠']['組裝'];
             const bossAssembly = analysis['博士廠']['組裝'];
 
-            // 宗瑋廠
             document.getElementById('zongweiAssemblyTotal').textContent = `${zongweiAssembly.total} 次`;
             document.getElementById('zongweiAssemblyDay').textContent = `${zongweiAssembly.dayShift} 次`;
             document.getElementById('zongweiAssemblyNight').textContent = `${zongweiAssembly.nightShift} 次`;
             updateIssuesDisplay('zongweiAssemblyIssues', zongweiAssembly.issues, zongweiAssembly.total);
             
-            // 博士廠
             document.getElementById('bossAssemblyTotal').textContent = `${bossAssembly.total} 次`;
             document.getElementById('bossAssemblyDay').textContent = `${bossAssembly.dayShift} 次`;
             document.getElementById('bossAssemblyNight').textContent = `${bossAssembly.nightShift} 次`;
@@ -1070,17 +1141,15 @@
             }
             let html = '';
             const issueArray = Object.keys(issues).map(issue => ({
-                name: issue,
-                count: issues[issue]
+                name: issue, count: issues[issue]
             })).sort((a, b) => b.count - a.count);
 
             issueArray.forEach(issue => {
-                const count = issue.count;
-                const percentage = total > 0 ? ((count / total) * 100).toFixed(1) : 0;
+                const percentage = total > 0 ? ((issue.count / total) * 100).toFixed(1) : 0;
                 html += `
                     <div class="stats-row">
                         <span class="stat-label">${issue.name}</span>
-                        <span class="stat-value">${count} 次 (${percentage}%)</span>
+                        <span class="stat-value">${issue.count} 次 (${percentage}%)</span>
                     </div>
                 `;
             });
@@ -1091,8 +1160,7 @@
             const element = document.getElementById(elementId);
             const titleElement = document.getElementById(titleId);
             const personnelArray = Object.keys(personnel).map(name => ({
-                name: name,
-                count: personnel[name].total
+                name: name, count: personnel[name].total
             })).sort((a, b) => b.count - a.count);
             
             const totalPersonnel = Object.keys(personnel).length;
@@ -1124,61 +1192,40 @@
             
             let globalMax = 0;
             chartLabels.forEach(issue => {
-                globalMax = Math.max(globalMax, zongweiData.day[issue], zongweiData.night[issue]);
-                globalMax = Math.max(globalMax, bossData.day[issue], bossData.night[issue]);
+                globalMax = Math.max(globalMax, zongweiData.day[issue], zongweiData.night[issue], bossData.day[issue], bossData.night[issue]);
             });
             let displayMax = globalMax < 5 ? 5 : Math.ceil((globalMax + 1) / 5) * 5;
 
-            charts['zongweiDetailed'] = new Chart(document.getElementById('zongweiMoldingDetailedChart').getContext('2d'), {
+            const config = (data) => ({
                 type: 'bar',
                 data: {
                     labels: chartLabels,
                     datasets: [
-                        { label: '日班', data: chartLabels.map(issue => zongweiData.day[issue]), backgroundColor: 'rgba(75, 192, 192, 0.8)' },
-                        { label: '夜班', data: chartLabels.map(issue => zongweiData.night[issue]), backgroundColor: 'rgba(255, 159, 64, 0.8)' }
+                        { label: '日班', data: chartLabels.map(issue => data.day[issue]), backgroundColor: 'rgba(75, 192, 192, 0.8)' },
+                        { label: '夜班', data: chartLabels.map(issue => data.night[issue]), backgroundColor: 'rgba(255, 159, 64, 0.8)' }
                     ]
                 },
                 options: getDetailedChartOptions(displayMax)
             });
-            
-            charts['bossDetailed'] = new Chart(document.getElementById('bossMoldingDetailedChart').getContext('2d'), {
-                type: 'bar',
-                data: {
-                    labels: chartLabels,
-                    datasets: [
-                        { label: '日班', data: chartLabels.map(issue => bossData.day[issue]), backgroundColor: 'rgba(75, 192, 192, 0.8)' },
-                        { label: '夜班', data: chartLabels.map(issue => bossData.night[issue]), backgroundColor: 'rgba(255, 159, 64, 0.8)' }
-                    ]
-                },
-                options: getDetailedChartOptions(displayMax)
-            });
+
+            charts['zongweiDetailed'] = new Chart(document.getElementById('zongweiMoldingDetailedChart').getContext('2d'), config(zongweiData));
+            charts['bossDetailed'] = new Chart(document.getElementById('bossMoldingDetailedChart').getContext('2d'), config(bossData));
         }
         
-        function getDetailedChartOptions(globalMax) {
+        function getDetailedChartOptions(max) {
             return {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: true, position: 'top' },
-                    tooltip: { mode: 'index', intersect: false }
-                },
-                scales: {
-                    y: { beginAtZero: true, max: globalMax },
-                    x: { ticks: { font: { size: 14 } } }
-                }
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: true, position: 'top' }, tooltip: { mode: 'index', intersect: false } },
+                scales: { y: { beginAtZero: true, max: max }, x: { ticks: { font: { size: 14 } } } }
             };
         }
         
         function updateInsights(analysis, rawData) {
-            const totalIssues = Object.values(analysis).reduce((sum, factory) => sum + Object.values(factory).reduce((deptSum, dept) => deptSum + dept.total, 0), 0);
+            const totalIssues = Object.values(analysis).reduce((sum, f) => sum + Object.values(f).reduce((ds, d) => ds + d.total, 0), 0);
             const allIssues = {};
-            Object.values(analysis).forEach(factory => {
-                Object.values(factory).forEach(dept => {
-                    Object.keys(dept.issues).forEach(issue => {
-                        allIssues[issue] = (allIssues[issue] || 0) + dept.issues[issue];
-                    });
-                });
-            });
+            Object.values(analysis).forEach(f => Object.values(f).forEach(d => {
+                Object.keys(d.issues).forEach(i => allIssues[i] = (allIssues[i] || 0) + d.issues[i]);
+            }));
             
             const insights = [
                 { title: "🔧 成型班別 & 兩廠總體趨勢", fn: generateMergedShiftTrendAnalysis }, 
@@ -1187,143 +1234,172 @@
             ];
             
             let html = '';
-            const filteredInsights = insights.filter(insight => insight.condition !== false);
-
-            filteredInsights.forEach((insight, index) => { 
+            insights.forEach((insight, index) => { 
                 const result = insight.fn(analysis, totalIssues, allIssues); 
-                let contentHtml;
+                let contentHtml = result.isMerged ? result.htmlContent : 
+                                 (result.isStructured ? `<p><b>${result.summary}</b></p><ul>${result.list.map(i => `<li>${i.title}： ${i.content.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')}</li>`).join('')}</ul>` : 
+                                 `<p>${result.summary.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')}</p>`);
                 
-                if (result.isMerged) {
-                    contentHtml = result.htmlContent;
-                } else if (result.isStructured) {
-                    const listHtml = result.list.map((item) => `<li>${item.title}： ${item.content.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')}</li>`).join('');
-                    contentHtml = `<p><b>${result.summary}</b></p><ul>${listHtml}</ul>`;
-                } else {
-                    contentHtml = `<p>${result.summary.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')}</p>`;
-                }
-                
-                const spanClass = (filteredInsights.length % 2 === 1 && index === filteredInsights.length - 1) ? ' span-full' : '';
+                const spanClass = (insights.length % 2 === 1 && index === insights.length - 1) ? ' span-full' : '';
                 html += `<div class="insight-item${spanClass}"><h4>${insight.title}</h4><div class="insight-content-box">${contentHtml}</div></div>`;
             });
             document.getElementById('insightsGrid').innerHTML = html;
         }
-        
-        function generateMergedShiftTrendAnalysis(analysis, totalIssues, allIssues) {
-            const shiftResult = generateShiftAnalysis(analysis, totalIssues, allIssues);
-            const trendResult = generateTrendAnalysis(analysis, totalIssues, allIssues);
-            const combinedHtml = `<p>${shiftResult.summary.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')}</p><hr style="margin: 15px 0; border-top: 2px solid #e0e7ff;"><p>${trendResult.summary.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')}</p>`;
-            return { htmlContent: combinedHtml, isMerged: true };
+
+        // --- Insight 生成輔助函數 ---
+        function generateMergedShiftTrendAnalysis(analysis, total, all) {
+            const s = generateShiftAnalysis(analysis, total, all);
+            const t = generateTrendAnalysis(analysis, total, all);
+            return { htmlContent: `<p>${s.summary.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')}</p><hr style="margin: 15px 0; border-top: 2px solid #e0e7ff;"><p>${t.summary.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')}</p>`, isMerged: true };
         }
-
-        function generateMergedIssuePersonnelAnalysis(analysis, totalIssues, allIssues) {
-            const issueResult = generateIssueAnalysis(analysis, totalIssues, allIssues);
-            const personnelResult = generatePersonnelAnalysis(analysis, totalIssues, allIssues);
-            const combinedHtml = `<p>${issueResult.summary.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')}</p><hr style="margin: 15px 0; border-top: 2px solid #e0e7ff;"><p>${personnelResult.summary.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')}</p>`;
-            return { htmlContent: combinedHtml, isMerged: true };
+        function generateMergedIssuePersonnelAnalysis(analysis, total, all) {
+            const i = generateIssueAnalysis(analysis, total, all);
+            const p = generatePersonnelAnalysis(analysis, total, all);
+            return { htmlContent: `<p>${i.summary.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')}</p><hr style="margin: 15px 0; border-top: 2px solid #e0e7ff;"><p>${p.summary.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')}</p>`, isMerged: true };
         }
-
-        function generateShiftAnalysis(analysis, totalIssues, allIssues) {
-            const zongwei = analysis['宗瑋廠']['成型'];
-            const boss = analysis['博士廠']['成型'];
-            const moldingTotalCombined = zongwei.total + boss.total;
-            
-            const zongweiTotalPct = moldingTotalCombined > 0 ? ((zongwei.total / moldingTotalCombined) * 100).toFixed(1) : 0;
-            const bossTotalPct = moldingTotalCombined > 0 ? ((boss.total / moldingTotalCombined) * 100).toFixed(1) : 0;
-
-            let result = `**宗瑋廠** 成型部門佔總異常 **${zongweiTotalPct}%**，**博士廠** 佔 **${bossTotalPct}%**。<br>`;
-            
-            let maxCount = -1, highShiftFactory = '', highShift = '';
-            const countData = [
-                { f: '宗瑋廠', s: '夜班', c: zongwei.nightShift },
-                { f: '宗瑋廠', s: '日班', c: zongwei.dayShift },
-                { f: '博士廠', s: '夜班', c: boss.nightShift },
-                { f: '博士廠', s: '日班', c: boss.dayShift }
-            ];
-            countData.forEach(d => { if (d.c > maxCount) { maxCount = d.c; highShiftFactory = d.f; highShift = d.s; } });
-
-            if (highShiftFactory && maxCount > 0) {
-                 result += `結論：**${highShiftFactory}** 的 **${highShift}** 佔異常次數最多。`;
-            }
-            return { summary: result, isStructured: false };
+        function generateShiftAnalysis(analysis, total, all) {
+            const zw = analysis['宗瑋廠']['成型'], bs = analysis['博士廠']['成型'], mTotal = zw.total + bs.total;
+            const zwPct = mTotal > 0 ? ((zw.total / mTotal) * 100).toFixed(1) : 0;
+            const bsPct = mTotal > 0 ? ((bs.total / mTotal) * 100).toFixed(1) : 0;
+            let res = `**宗瑋廠** 成型部門佔成型總異常 **${zwPct}%**，**博士廠** 佔 **${bsPct}%**。`;
+            const counts = [{f:'宗瑋',s:'夜班',c:zw.nightShift},{f:'宗瑋',s:'日班',c:zw.dayShift},{f:'博士',s:'夜班',c:bs.nightShift},{f:'博士',s:'日班',c:bs.dayShift}].sort((a,b)=>b.c-a.c);
+            if(counts[0].c > 0) res += `<br>結論：**${counts[0].f}廠** 的 **${counts[0].s}** 異常頻率最高。`;
+            return { summary: res };
         }
-        
-        function generateIssueAnalysis(analysis, totalIssues, allIssues) { 
-            if (totalIssues === 0) return { summary: "本期間內無異常記錄。", isStructured: false };
+        function generateIssueAnalysis(total, totalIssues, allIssues) {
+            if (totalIssues === 0) return { summary: "本期間內無異常記錄。" };
             const leakPct = allIssues['漏報工'] ? ((allIssues['漏報工'] / totalIssues) * 100).toFixed(1) : 0;
-            const quantityPct = allIssues['數量錯誤'] ? ((allIssues['數量錯誤'] / totalIssues) * 100).toFixed(1) : 0;
-            let summary = `本期總異常 **${totalIssues}** 次：**漏報工** (${leakPct}%)、**數量錯誤** (${quantityPct}%)。`;
-            return { summary: summary, isStructured: false };
+            const qtyPct = allIssues['數量錯誤'] ? ((allIssues['數量錯誤'] / totalIssues) * 100).toFixed(1) : 0;
+            return { summary: `本期總異常 **${totalIssues}** 次：**漏報工** (${leakPct}%)、**數量錯誤** (${qtyPct}%)。` };
+        }
+        function generatePersonnelAnalysis(analysis) {
+            let count = 0;
+            Object.values(analysis).forEach(f => Object.values(f).forEach(d => count += Object.keys(d.personnel).length));
+            return { summary: count > 0 ? `本期共計 **${count}** 位人員發生次數>3次，應加強操作指導。` : "人員報工表現穩定。" };
+        }
+        function generateTrendAnalysis(analysis) {
+            const zwT = analysis['宗瑋廠']['成型'].total + analysis['宗瑋廠']['組裝'].total;
+            const bsT = analysis['博士廠']['成型'].total + analysis['博士廠']['組裝'].total;
+            return { summary: `兩廠異常總數：宗瑋廠 **${zwT} 次**，博士廠 **${bsT} 次**。` };
+        }
+        function generateRecommendations(analysis, total) {
+            if (total === 0) return { summary: "表現優異，建議維持。" };
+            return { summary: "建議改善方向：", isStructured: true, list: [
+                { title: "SOP 執行確認", content: "主管應針對高頻異常人員進行現場查核。" },
+                { title: "即時回報", content: "系統故障應第一時間通知，避免後補導致數據錯誤。" },
+                { title: "數量核對", content: "落實每日生產數與報工數之比對機制。" }
+            ]};
         }
 
-        function generatePersonnelAnalysis(analysis, totalIssues, allIssues) {
-            let totalHighFreq = 0;
-            Object.values(analysis).forEach(factory => Object.values(factory).forEach(dept => { totalHighFreq += Object.keys(dept.personnel).length; }));
-            if (totalHighFreq === 0) return { summary: "人員報工表現穩定，無高頻異常人員。", isStructured: false };
-            return { summary: `本期共計 **${totalHighFreq}** 位人員發生次數>3次，應加強操作指導。`, isStructured: false };
-        }
+        // --- PDF 匯出與控制功能 ---
+        const exportModal = document.getElementById('exportModal');
+        const openModalBtn = document.getElementById('openExportModalBtn');
+        const cancelModalBtn = document.getElementById('cancelPdfBtn');
+        const confirmModalBtn = document.getElementById('confirmPdfBtn');
 
-        function generateTrendAnalysis(analysis, totalIssues, allIssues) {
-            const zongweiTotal = analysis['宗瑋廠']['成型'].total + analysis['宗瑋廠']['組裝'].total;
-            const bossTotal = analysis['博士廠']['成型'].total + analysis['博士廠']['組裝'].total;
-            return { summary: `兩廠異常總數：宗瑋廠 **${zongweiTotal} 次**，博士廠 **${bossTotal} 次**。`, isStructured: false };
-        }
+        openModalBtn.addEventListener('click', () => exportModal.style.display = 'flex');
+        cancelModalBtn.addEventListener('click', () => exportModal.style.display = 'none');
 
-        function generateRecommendations(analysis, totalIssues, allIssues) {
-            if (totalIssues === 0) return { summary: "表現優異，建議維持。", isStructured: false };
-            
-            const listItems = [
-                { 
-                    title: "SOP 執行確認", 
-                    content: "部門主管應針對 **重點關注人員** 進行現場查核，確保報工步驟與實際作業流程同步。"
-                },
-                {
-                    title: "即時問題反饋", 
-                    content: "建立報工異常回報機制，若遇 **系統、網路** 等外部因素導致無法即時報工，應於第一時間通知現場主管。"
-                },
-                {
-                    title: "數據即時性與現場核對", 
-                    content: "建議每日比對 **前台生產數量** 與 **作業員報工數** 是否一致，從源頭杜絕人為偏差。"
-                }
-            ];
-            return { summary: "建議改善方向：", list: listItems, isStructured: true };
-        }
+        async function exportSelectedPdf() {
+            const showMolding = document.getElementById('checkMolding').checked;
+            const showAssembly = document.getElementById('checkAssembly').checked;
+            const showInsights = document.getElementById('checkInsights').checked;
 
-        async function exportPdf() {
-            const exportBtn = document.getElementById('exportPdfBtn');
-            const pdfContentWrapper = document.getElementById('pdfContentWrapper');
-            const pdfTitle = document.getElementById('pdfTitle');
+            exportModal.style.display = 'none';
+            document.getElementById('loading').classList.add('show');
 
-            exportBtn.style.display = 'none';
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF('p', 'mm', 'a4');
+            const pageWidth = pdf.internal.pageSize.getWidth();
+            const pageHeight = pdf.internal.pageSize.getHeight();
+            const margin = 10;
+            const contentWidth = pageWidth - (margin * 2);
+            const contentMaxHeight = pageHeight - (margin * 2);
+
+            // 取得元素
+            const pdfHeader = document.getElementById('pdfTitleHeader');
+            const moldingBlock = document.getElementById('moldingBlock');
+            const assemblyBlock = document.getElementById('assemblyBlock');
+            const insightsSection = document.getElementById('insightsSection');
+
+            // 暫時顯示隱藏 Header 用於擷取
+            pdfHeader.style.display = 'block';
 
             try {
-                pdfTitle.style.display = 'block';
+                // --- 第一頁：標題 + 成型區塊 ---
+                let page1Elements = [];
+                page1Elements.push(pdfHeader);
+                if (showMolding) page1Elements.push(moldingBlock);
 
-                const canvas = await html2canvas(pdfContentWrapper, { scale: 2, useCORS: true });
-                const img = canvas.toDataURL('image/jpeg', 0.9);
-                const pdfWidth = pdf.internal.pageSize.getWidth();
-                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-                
-                pdf.addImage(img, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-                pdf.save(`MES分析報告_${document.getElementById('startDate').value}.pdf`);
+                await renderElementsToPage(pdf, page1Elements, contentWidth, contentMaxHeight, margin, true);
+
+                // --- 第二頁：組裝區塊 + 建議分析 ---
+                let page2Elements = [];
+                if (showAssembly) page2Elements.push(assemblyBlock);
+                if (showInsights) page2Elements.push(insightsSection);
+
+                if (page2Elements.length > 0) {
+                    pdf.addPage();
+                    await renderElementsToPage(pdf, page2Elements, contentWidth, contentMaxHeight, margin, false);
+                }
+
+                pdf.save(`MES報工分析_${new Date().toLocaleDateString().replace(/\//g, '-')}.pdf`);
             } catch (err) {
-                console.error(err);
+                console.error('PDF Export Error:', err);
+                alert('匯出 PDF 時發生錯誤');
             } finally {
-                pdfTitle.style.display = 'none';
-                exportBtn.style.display = 'block';
+                pdfHeader.style.display = 'none';
+                document.getElementById('loading').classList.remove('show');
             }
         }
-        
-        window.onload = function() {
+
+        // 核心渲染與自動縮放函數
+        async function renderElementsToPage(pdf, elements, maxWidth, maxHeight, margin, isFirstPage) {
+            let canvases = [];
+            let totalRequiredHeight = 0;
+
+            // 1. 先將所有元素轉為 canvas 並計算在固定寬度下的總高度
+            for (let el of elements) {
+                const canvas = await html2canvas(el, { 
+                    scale: 2, 
+                    useCORS: true, 
+                    logging: false,
+                    backgroundColor: "#ffffff" 
+                });
+                const imgWidth = canvas.width;
+                const imgHeight = canvas.height;
+                const ratioHeight = (imgHeight * maxWidth) / imgWidth;
+                
+                canvases.push({ canvas, ratioHeight });
+                totalRequiredHeight += ratioHeight + 5; // 5mm 為元素間距
+            }
+
+            // 2. 計算縮放比例 (如果總高度超過頁面最大高度)
+            let scaleFactor = 1;
+            if (totalRequiredHeight > maxHeight) {
+                scaleFactor = maxHeight / totalRequiredHeight;
+            }
+
+            // 3. 按照比例繪製到 PDF
+            let currentY = margin;
+            for (let item of canvases) {
+                const drawHeight = item.ratioHeight * scaleFactor;
+                const imgData = item.canvas.toDataURL('image/jpeg', 0.95);
+                
+                pdf.addImage(imgData, 'JPEG', margin, currentY, maxWidth * scaleFactor, drawHeight);
+                currentY += drawHeight + (5 * scaleFactor);
+            }
+        }
+
+        confirmModalBtn.addEventListener('click', exportSelectedPdf);
+
+        window.onclick = (event) => {
+            if (event.target == exportModal) exportModal.style.display = 'none';
+        }
+
+        window.onload = () => {
             setDefaultDates();
             setupFileUpload();
-            document.getElementById('exportPdfBtn').addEventListener('click', exportPdf);
-            
-            // 監聽外部資源載入情況 (選配)
-            if (typeof XLSX === 'undefined') {
-                console.log('XLSX library not found, retrying...');
-            }
         };
     </script>
 </body>
