@@ -1312,7 +1312,8 @@
             const pdf = new jsPDF('p', 'mm', 'a4');
             const pageWidth = pdf.internal.pageSize.getWidth();
             const pageHeight = pdf.internal.pageSize.getHeight();
-            const margin = 10;
+            // 減少 margin 以增加可視區域
+            const margin = 5;
             const contentWidth = pageWidth - (margin * 2);
             const contentMaxHeight = pageHeight - (margin * 2);
 
@@ -1358,13 +1359,14 @@
             let canvases = [];
             let totalRequiredHeight = 0;
 
-            // 1. 先將所有元素轉為 canvas 並計算在固定寬度下的總高度
+            // 1. 先將所有元素轉為 canvas
             for (let el of elements) {
                 const canvas = await html2canvas(el, { 
-                    scale: 2, 
+                    scale: 3, // 提高解析度
                     useCORS: true, 
                     logging: false,
-                    backgroundColor: "#ffffff" 
+                    backgroundColor: "#ffffff",
+                    windowWidth: 1200 // 強制設定寬度，讓字體在 A4 上看起來比較大
                 });
                 const imgWidth = canvas.width;
                 const imgHeight = canvas.height;
@@ -1384,9 +1386,14 @@
             let currentY = margin;
             for (let item of canvases) {
                 const drawHeight = item.ratioHeight * scaleFactor;
+                const drawWidth = maxWidth * scaleFactor;
+                
+                // 計算置中位置 (當因為高度限制而縮小寬度時，保持置中)
+                const xOffset = margin + (maxWidth - drawWidth) / 2;
+
                 const imgData = item.canvas.toDataURL('image/jpeg', 0.95);
                 
-                pdf.addImage(imgData, 'JPEG', margin, currentY, maxWidth * scaleFactor, drawHeight);
+                pdf.addImage(imgData, 'JPEG', xOffset, currentY, drawWidth, drawHeight);
                 currentY += drawHeight + (5 * scaleFactor);
             }
         }
