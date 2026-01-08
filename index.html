@@ -1354,7 +1354,7 @@
             }
         }
 
-        // 核心渲染與自動縮放函數
+        // 核心渲染與自動縮放函數 (修正版)
         async function renderElementsToPage(pdf, elements, maxWidth, maxHeight, margin, isFirstPage) {
             let canvases = [];
             let totalRequiredHeight = 0;
@@ -1362,11 +1362,13 @@
             // 1. 先將所有元素轉為 canvas
             for (let el of elements) {
                 const canvas = await html2canvas(el, { 
-                    scale: 3, // 提高解析度
+                    scale: 2, // 修正：設為 2 即可，避免因寬度變大導致圖片過大而當機
                     useCORS: true, 
                     logging: false,
                     backgroundColor: "#ffffff",
-                    windowWidth: 1200 // 強制設定寬度，讓字體在 A4 上看起來比較大
+                    windowWidth: 1920, // 修正：設定足夠大的寬度，確保雙欄圖表不會被裁切
+                    scrollX: 0,        // 修正：強制從左側開始截取
+                    scrollY: 0         // 修正：強制從頂部開始截取
                 });
                 const imgWidth = canvas.width;
                 const imgHeight = canvas.height;
@@ -1388,7 +1390,7 @@
                 const drawHeight = item.ratioHeight * scaleFactor;
                 const drawWidth = maxWidth * scaleFactor;
                 
-                // 計算置中位置 (當因為高度限制而縮小寬度時，保持置中)
+                // 計算置中位置
                 const xOffset = margin + (maxWidth - drawWidth) / 2;
 
                 const imgData = item.canvas.toDataURL('image/jpeg', 0.95);
