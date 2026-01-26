@@ -441,6 +441,12 @@
                     <div class="section-subtitle">📊 客觀現況觀察與建議</div>
                     <div class="insight-grid" id="insightsGrid"></div>
                 </div>
+
+                <!-- 區塊4: AI 建議 (獨立容器) -->
+                <div class="insights mt-8" id="aiBlock" style="display:none;">
+                    <div class="section-subtitle">🤖 AI 顧問策略建議</div>
+                    <div id="aiContent"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -469,7 +475,7 @@
                     <label class="checkbox-label"><input type="checkbox" checked> 4. 📊 客觀觀察與流程建議</label>
                     <div class="order-btns"><button class="move-btn" onclick="moveUp(this)">⬆️</button><button class="move-btn" onclick="moveDown(this)">⬇️</button></div>
                 </div>
-                <div class="checkbox-item sortable-item" data-id="aiConsultantSection">
+                <div class="checkbox-item sortable-item" data-id="aiBlock">
                     <label class="checkbox-label"><input type="checkbox" checked> 5. 🤖 AI 顧問策略建議</label>
                     <div class="order-btns"><button class="move-btn" onclick="moveUp(this)">⬆️</button><button class="move-btn" onclick="moveDown(this)">⬇️</button></div>
                 </div>
@@ -482,12 +488,13 @@
     </div>
     
     <script>
+        // --- 全域變數宣告 ---
         let excelData = [];
         let charts = {};
         const TARGET_FIELDS = ['廠別', '部門', '調整日期', '報工人員1', '班別', '調整原因'];
         const MAIN_ISSUES = ['漏報工', '數量錯誤', '未送啟始件(後補)', '其他/未分類'];
         
-        // --- 日期格式化工具 ---
+        // --- 輔助工具 ---
         function excelDateToISOString(serial) {
             if (typeof serial !== 'number' || isNaN(serial) || serial <= 0) return null;
             const baseDate = new Date(Date.UTC(1899, 11, 30));
@@ -514,27 +521,57 @@
             document.getElementById('trendStartMonth').value = formatMonth(sixMonthsAgo);
         }
         
-        // --- 檔案上傳與監聽 ---
-        function setupFileUpload() {
+        // --- 檔案與事件監聽 ---
+        function setupListeners() {
             const uploadArea = document.getElementById('uploadArea');
             const fileInput = document.getElementById('fileInput');
             const analyzeBtn = document.getElementById('analyzeBtn');
             const updateTrendBtn = document.getElementById('updateTrendBtn');
-            
+            const openExportModalBtn = document.getElementById('openExportModalBtn');
+            const cancelPdfBtn = document.getElementById('cancelPdfBtn');
+            const confirmPdfBtn = document.getElementById('confirmPdfBtn');
+            const exportModal = document.getElementById('exportModal');
+
+            // 上傳區塊
             uploadArea.addEventListener('click', () => fileInput.click());
             uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.classList.add('dragover'); });
-            uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
+            
+            uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover')); 
+            
             uploadArea.addEventListener('drop', (e) => {
                 e.preventDefault(); uploadArea.classList.remove('dragover');
                 if (e.dataTransfer.files.length > 0) handleFile(e.dataTransfer.files[0]);
             });
             fileInput.addEventListener('change', (e) => { if (e.target.files.length > 0) handleFile(e.target.files[0]); });
+            
+            // 按鈕功能
             analyzeBtn.addEventListener('click', analyzeData);
             updateTrendBtn.addEventListener('click', () => { if(excelData.length > 0) generateTrendCharts(excelData); });
+            
+            // 匯出彈窗控制
+            openExportModalBtn.addEventListener('click', () => {
+                // 檢查是否已分析
+                if(excelData.length === 0 || !charts['trendMain']) {
+                    alert('請先上傳檔案並完成分析後，才能匯出 PDF。');
+                    return;
+                }
+                // 檢查函式庫是否載入成功 (關鍵檢查)
+                if (typeof window.jspdf === 'undefined' || typeof html2canvas === 'undefined') {
+                    alert('⚠️ 系統錯誤：PDF 核心元件未載入。\n\n可能原因：\n1. 公司內網阻擋了 CDN 連線\n2. 網路連線中斷\n\n解決方法：\n請確保網路可連接外網 (cdn.jsdelivr.net)。');
+                    return;
+                }
+                exportModal.style.display = 'flex';
+            });
+            
+            cancelPdfBtn.addEventListener('click', () => exportModal.style.display = 'none');
+            confirmPdfBtn.addEventListener('click', exportSelectedPdf);
+            
+            window.onclick = (e) => { if(e.target == exportModal) exportModal.style.display = 'none'; };
         }
         
+        // --- 檔案處理 ---
         function handleFile(file) {
-            if (typeof XLSX === 'undefined') { alert('系統元件載入中，請稍候再試。'); return; }
+            if (typeof XLSX === 'undefined') { alert('Excel 元件載入中，請稍候再試。'); return; }
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
@@ -546,7 +583,7 @@
                     document.querySelector('.upload-area h3').textContent = `已上傳：${file.name}`;
                     document.querySelector('.upload-area p').textContent = `共讀取 ${excelData.length} 筆資料`;
                     
-                    // 預處理日期
+                    // 日期預處理
                     excelData.forEach(row => {
                         const adjustDate = row['調整日期'];
                         if (adjustDate) {
@@ -582,11 +619,11 @@
             uploadSection.insertAdjacentHTML('beforeend', previewHtml);
         }
         
+        // --- 分析邏輯 ---
         function filterDataByDate(data, startDate, endDate) {
             return data.filter(row => row['FormattedDate'] && row['FormattedDate'] >= startDate && row['FormattedDate'] <= endDate);
         }
         
-        // --- 主分析流程 ---
         function analyzeData() {
             const startDate = document.getElementById('startDate').value;
             const endDate = document.getElementById('endDate').value;
@@ -623,7 +660,7 @@
             updateInsights(analysis, data);
         }
         
-        // --- 趨勢圖表生成 ---
+        // --- 圖表生成 ---
         function generateTrendCharts(allData) {
             const trendBlock = document.getElementById('trendBlock');
             trendBlock.style.display = 'block';
@@ -695,7 +732,7 @@
             });
         }
 
-        // --- 數據分類邏輯 ---
+        // --- 統計計算 ---
         function analyzeByFactoryAndDepartment(data) {
             const result = { 宗瑋廠: { 成型: [], 組裝: [] }, 博士廠: { 成型: [], 組裝: [] } };
             data.forEach(row => {
@@ -744,7 +781,7 @@
             const r = {}; Object.keys(p).forEach(k => { if(p[k].total > 3) r[k] = { total: p[k].total }; }); return r;
         }
         
-        // --- 畫面更新邏輯 ---
+        // --- 視圖更新 ---
         function updateMoldingStats(analysis) {
             const zw = analysis['宗瑋廠']['成型'], bs = analysis['博士廠']['成型'];
             const t = zw.total + bs.total;
@@ -814,27 +851,34 @@
             return { responsive: true, maintainAspectRatio: false, layout: { padding: { bottom: 20 } }, plugins: { legend: { position: 'top' } }, scales: { y: { beginAtZero: true, max: max }, x: { ticks: { font: { size: 14 } } } } };
         }
         
+        // --- 洞察區塊 (修正版：分離 AI 建議) ---
         function updateInsights(analysis, rawData) {
             const total = Object.values(analysis).reduce((s, f) => s + Object.values(f).reduce((ds, d) => ds + d.total, 0), 0);
-            const allIssues = {}; Object.values(analysis).forEach(f => Object.values(f).forEach(d => Object.keys(d.issues).forEach(i => allIssues[i] = (allIssues[i]||0) + d.issues[i])));
+            const allIssues = {}; 
+            Object.values(analysis).forEach(f => Object.values(f).forEach(d => Object.keys(d.issues).forEach(i => allIssues[i] = (allIssues[i]||0) + d.issues[i])));
             
-            const insights = [
+            // 1. 一般觀察與結論 (放進 insightsGrid)
+            const standardInsights = [
                 { title: "📊 成型班別與總體現況", fn: generateMergedShiftTrendAnalysis }, 
                 { title: "⚠️ 主要問題與人員分析", fn: generateMergedIssuePersonnelAnalysis },
-                { title: "💡 結論與流程改善方向", fn: generateRecommendations, spanFull: true }, 
-                { title: "🤖 AI 顧問策略建議", fn: generateAIConsultantAdvice, id: "aiConsultantSection", spanFull: true } 
+                { title: "💡 結論與流程改善方向", fn: generateRecommendations, spanFull: true }
             ];
             
             let html = '';
-            insights.forEach(insight => { 
+            standardInsights.forEach(insight => { 
                 const res = insight.fn(analysis, total, allIssues);
                 let content = res.isMerged ? res.htmlContent : (res.isStructured ? `<p><b>${res.summary}</b></p><ul>${res.list.map(i => `<li>${i.title}： ${i.content.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')}</li>`).join('')}</ul>` : `<p>${res.summary.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')}</p>`);
                 html += `<div class="insight-item${insight.spanFull?' span-full':''}"${insight.id?` id="${insight.id}"`:''}><h4>${insight.title}</h4><div class="insight-content-box">${content}</div></div>`;
             });
             document.getElementById('insightsGrid').innerHTML = html;
+
+            // 2. AI 建議 (獨立渲染到 aiContent)
+            const aiData = generateAIConsultantAdvice(analysis, total, allIssues);
+            const aiContentHtml = `<div class="insight-content-box"><p><b>${aiData.summary}</b></p><ul>${aiData.list.map(i => `<li>${i.title}： ${i.content.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')}</li>`).join('')}</ul></div>`;
+            document.getElementById('aiContent').innerHTML = aiContentHtml;
+            document.getElementById('aiBlock').style.display = 'block';
         }
 
-        // --- 洞察文字生成 ---
         function generateMergedShiftTrendAnalysis(a, t, all) {
             const zw = a['宗瑋廠']['成型'], bs = a['博士廠']['成型'], mt = zw.total + bs.total;
             let res = `**宗瑋廠** 成型部門佔成型總異常 **${mt>0?((zw.total/mt)*100).toFixed(1):0}%**，**博士廠** 佔 **${mt>0?((bs.total/mt)*100).toFixed(1):0}%**。`;
@@ -858,42 +902,31 @@
             const leakCount = allIssues['漏報工'] || 0, qtyCount = allIssues['數量錯誤'] || 0, startUpCount = allIssues['未送啟始件(後補)'] || 0;
 
             let p1, p2, p3;
+            // 1. 跨廠
             if (Math.abs(zwTotal - bossTotal) > 20) {
                 const h = zwTotal > bossTotal ? '宗瑋廠' : '博士廠';
-                p1 = { title: "現場管理強度檢視", content: `兩廠異常差距顯著 (宗瑋${zwTotal} vs 博士${bossTotal})。建議優先檢視**${h}**的基層幹部巡查落實度，確認是否因生產步調快而忽略了表單填寫紀律。` };
+                p1 = { title: "現場管理強度檢視", content: `兩廠異常差距顯著 (宗瑋${zwTotal} vs 博士${bossTotal})。建議優先檢視**${h}**的基層幹部巡查落實，確認原因。` };
             } else {
                 p1 = { title: "標準作業一致性", content: "兩廠異常頻率接近，建議由生管或品保單位主導，統一兩廠的**報工填寫規範**與**交接班SOP**，避免因人員調動產生認知誤差。" };
             }
+            // 2. 類型
             if (leakCount > qtyCount && leakCount > startUpCount) {
-                p2 = { title: "交班點檢落實", content: `本期**漏報工**比例偏高 (${leakCount}次)。建議要求領班於每日下班前執行**末件核對**，並強制落實紙本/看板的生產日誌簽核，強化人員記憶。` };
+                p2 = { title: "交班點檢落實", content: `本期**漏報工**比例偏高 (${leakCount}次)。建議要求領班於每日下班前執行**報工資料核對**，強化人員記憶。` };
             } else if (qtyCount > leakCount && qtyCount > startUpCount) {
                 p2 = { title: "計數方式優化", content: `本期**數量錯誤**頻發 (${qtyCount}次)。建議檢討現場**容器定量化**（如固定裝箱數）的執行狀況，或增加電子秤重抽檢頻率，減少純人工點算的誤差。` };
             } else {
                 p2 = { title: "人員自主檢查", content: "各類異常分佈平均，顯示現場人員對異常情境的判斷不一。建議在早會時進行**案例宣導**，明確定義各類異常的正確回報流程。" };
             }
+            // 3. 通用
             p3 = { title: "績效考核連結", content: "建議將報工正確率納入**班組競賽**或**個人績效指標(KPI)**。針對低錯誤率的人員給予公開表揚，營造重視數據準確性的團隊氛圍。" };
             return { summary: "資深數據顧問策略觀點 (基於本期數據)：", isStructured: true, list: [p1, p2, p3] };
         }
 
-        // --- PDF 匯出修復版 ---
-        const exportModal = document.getElementById('exportModal');
-        document.getElementById('openExportModalBtn').addEventListener('click', () => {
-             // 檢查是否已有資料
-            if(Object.keys(charts).length === 0 && !document.getElementById('zongweiMoldingTotal').innerText.includes('次')) {
-                alert('請先進行分析後再匯出 PDF。');
-                return;
-            }
-            exportModal.style.display = 'flex';
-        });
-        document.getElementById('cancelPdfBtn').addEventListener('click', () => exportModal.style.display = 'none');
-        window.onclick = (e) => { if(e.target == exportModal) exportModal.style.display = 'none'; };
-
-        window.moveUp = function(btn) { const i=btn.closest('.sortable-item'), p=i.previousElementSibling; if(p) i.parentNode.insertBefore(i, p); };
-        window.moveDown = function(btn) { const i=btn.closest('.sortable-item'), n=i.nextElementSibling; if(n) i.parentNode.insertBefore(n, i); };
-
+        // --- PDF 匯出邏輯 (防呆版) ---
         async function exportSelectedPdf() {
+            // 1. 檢查函式庫是否載入 (Intranet 檢查)
             if (typeof window.jspdf === 'undefined' || typeof html2canvas === 'undefined') {
-                alert('系統元件尚未載入完成，請確認網路連線或稍後再試。');
+                alert('⚠️ 錯誤：PDF 核心元件未載入。\n\n請檢查您的網路連線，或確認防火牆是否阻擋了 CDN (cdn.jsdelivr.net)。');
                 return;
             }
 
@@ -901,6 +934,7 @@
             let renderQueue = [];
             const header = document.getElementById('pdfTitleHeader'), range = document.getElementById('dateRangeDisplay'), controls = document.querySelector('.trend-controls');
             
+            // 建立匯出佇列
             renderQueue.push({ element: header }); renderQueue.push({ element: range });
             items.forEach(i => { 
                 const chk = i.querySelector('input');
@@ -909,15 +943,17 @@
                 if(chk.checked && el) renderQueue.push({ element: el }); 
             });
 
-            if (renderQueue.length <= 2) { alert('未選擇任何區塊或無資料可匯出'); return; }
+            if (renderQueue.length <= 2) { alert('請至少勾選一個匯出項目'); return; }
 
+            // 鎖定 UI 避免重複點擊
+            const exportModal = document.getElementById('exportModal');
             exportModal.style.display = 'none'; 
             document.getElementById('loading').classList.add('show');
             
-            // 準備匯出環境
+            // 準備匯出環境 (顯示 Header, 隱藏按鈕)
             header.style.display = 'block'; 
-            if(controls) controls.style.display = 'none'; // 隱藏控制列
-            window.scrollTo(0, 0); // 強制滾動到頂部避免截圖錯誤
+            if(controls) controls.style.display = 'none'; 
+            window.scrollTo(0, 0); // 重要：防止下方內容截圖空白
 
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF('p', 'mm', 'a4');
@@ -927,14 +963,14 @@
             try {
                 for (let item of renderQueue) {
                     if(!item.element) continue;
-                    // 使用 html2canvas 截圖
+                    // 使用 html2canvas
                     const c = await html2canvas(item.element, { 
                         scale: 2, 
                         useCORS: true, 
                         logging: false, 
                         backgroundColor: "#ffffff", 
                         windowWidth: 1600,
-                        scrollY: -window.scrollY // 修正滾動偏移
+                        scrollY: -window.scrollY 
                     });
                     const rH = (c.height * cW) / c.width;
                     if (cY + rH > cH) { pdf.addPage(); cY = m; }
@@ -952,8 +988,13 @@
                 document.getElementById('loading').classList.remove('show'); 
             }
         }
+        
+        // 排序按鈕功能 (全域)
+        window.moveUp = function(btn) { const i=btn.closest('.sortable-item'), p=i.previousElementSibling; if(p) i.parentNode.insertBefore(i, p); };
+        window.moveDown = function(btn) { const i=btn.closest('.sortable-item'), n=i.nextElementSibling; if(n) i.parentNode.insertBefore(n, i); };
 
-        window.onload = () => { setDefaultDates(); setupFileUpload(); };
+        // 初始化
+        window.onload = () => { setDefaultDates(); setupListeners(); };
     </script>
 </body>
 </html>
