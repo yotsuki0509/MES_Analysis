@@ -487,6 +487,7 @@
         const TARGET_FIELDS = ['廠別', '部門', '調整日期', '報工人員1', '班別', '調整原因'];
         const MAIN_ISSUES = ['漏報工', '數量錯誤', '未送啟始件(後補)', '其他/未分類'];
         
+        // --- 日期格式化工具 ---
         function excelDateToISOString(serial) {
             if (typeof serial !== 'number' || isNaN(serial) || serial <= 0) return null;
             const baseDate = new Date(Date.UTC(1899, 11, 30));
@@ -513,6 +514,7 @@
             document.getElementById('trendStartMonth').value = formatMonth(sixMonthsAgo);
         }
         
+        // --- 檔案上傳與監聽 ---
         function setupFileUpload() {
             const uploadArea = document.getElementById('uploadArea');
             const fileInput = document.getElementById('fileInput');
@@ -532,7 +534,7 @@
         }
         
         function handleFile(file) {
-            if (typeof XLSX === 'undefined') { alert('函式庫載入中，請稍候。'); return; }
+            if (typeof XLSX === 'undefined') { alert('系統元件載入中，請稍候再試。'); return; }
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
@@ -543,6 +545,8 @@
                     document.getElementById('analyzeBtn').disabled = false;
                     document.querySelector('.upload-area h3').textContent = `已上傳：${file.name}`;
                     document.querySelector('.upload-area p').textContent = `共讀取 ${excelData.length} 筆資料`;
+                    
+                    // 預處理日期
                     excelData.forEach(row => {
                         const adjustDate = row['調整日期'];
                         if (adjustDate) {
@@ -559,7 +563,7 @@
                         }
                     });
                     showDataPreview();
-                } catch (error) { alert('檔案讀取失敗'); }
+                } catch (error) { console.error(error); alert('檔案讀取失敗，請確認格式。'); }
             };
             reader.readAsArrayBuffer(file);
         }
@@ -582,6 +586,7 @@
             return data.filter(row => row['FormattedDate'] && row['FormattedDate'] >= startDate && row['FormattedDate'] <= endDate);
         }
         
+        // --- 主分析流程 ---
         function analyzeData() {
             const startDate = document.getElementById('startDate').value;
             const endDate = document.getElementById('endDate').value;
@@ -594,13 +599,13 @@
                 try {
                     const filteredData = filterDataByDate(excelData, startDate, endDate);
                     if (filteredData.length === 0) {
-                        alert('無符合日期資料'); document.getElementById('dashboard').classList.remove('show');
+                        alert('此日期區間無符合資料'); document.getElementById('dashboard').classList.remove('show');
                     } else {
                         generateAnalysisReport(filteredData, startDate, endDate);
                         document.getElementById('dashboard').classList.add('show');
                     }
-                    document.getElementById('loading').classList.remove('show');
-                } catch (error) { console.error(error); document.getElementById('loading').classList.remove('show'); }
+                } catch (error) { console.error(error); alert('分析過程發生錯誤: ' + error.message); }
+                finally { document.getElementById('loading').classList.remove('show'); }
             }, 100); 
         }
         
@@ -609,7 +614,7 @@
             document.getElementById('dateRangeDisplay').textContent = `主要分析區間：${rangeStr}`;
             document.getElementById('pdfDateDisplay').textContent = `統計區間：${rangeStr}`;
             
-            generateTrendCharts(excelData); // 使用全量資料但受限於趨勢選擇器
+            generateTrendCharts(excelData);
             const analysis = analyzeByFactoryAndDepartment(data);
             
             updateMoldingStats(analysis);
@@ -618,7 +623,7 @@
             updateInsights(analysis, data);
         }
         
-        // --- 趨勢圖表生成邏輯 (大字體、防切、隱藏功能) ---
+        // --- 趨勢圖表生成 ---
         function generateTrendCharts(allData) {
             const trendBlock = document.getElementById('trendBlock');
             trendBlock.style.display = 'block';
@@ -644,7 +649,6 @@
             const zongweiData = labels.map(m => monthlyStats[m].zongwei);
             const bossData = labels.map(m => monthlyStats[m].boss);
 
-            // 加大字體設定
             const commonFont = { size: 14, weight: 'bold', family: "'Inter', sans-serif" };
             const titleFont = { size: 16, weight: 'bold' };
             const chartOptions = {
@@ -691,6 +695,7 @@
             });
         }
 
+        // --- 數據分類邏輯 ---
         function analyzeByFactoryAndDepartment(data) {
             const result = { 宗瑋廠: { 成型: [], 組裝: [] }, 博士廠: { 成型: [], 組裝: [] } };
             data.forEach(row => {
@@ -739,6 +744,7 @@
             const r = {}; Object.keys(p).forEach(k => { if(p[k].total > 3) r[k] = { total: p[k].total }; }); return r;
         }
         
+        // --- 畫面更新邏輯 ---
         function updateMoldingStats(analysis) {
             const zw = analysis['宗瑋廠']['成型'], bs = analysis['博士廠']['成型'];
             const t = zw.total + bs.total;
@@ -828,6 +834,7 @@
             document.getElementById('insightsGrid').innerHTML = html;
         }
 
+        // --- 洞察文字生成 ---
         function generateMergedShiftTrendAnalysis(a, t, all) {
             const zw = a['宗瑋廠']['成型'], bs = a['博士廠']['成型'], mt = zw.total + bs.total;
             let res = `**宗瑋廠** 成型部門佔成型總異常 **${mt>0?((zw.total/mt)*100).toFixed(1):0}%**，**博士廠** 佔 **${mt>0?((bs.total/mt)*100).toFixed(1):0}%**。`;
@@ -845,36 +852,39 @@
             return { summary: "建議改善方向：", isStructured: true, list: [{ title: "SOP 執行確認", content: "主管應針對異常人員進行現場查核或訓練。" }, { title: "即時回報", content: "系統使用上有問題應第一時間通知，避免流程錯誤。" }, { title: "數量核對", content: "落實每日生產數與實際報工數之比對流程。" }] };
         }
         
-        // --- AI 顧問建議 (現場管理導向) ---
         function generateAIConsultantAdvice(analysis, total, allIssues) {
             const zwTotal = analysis['宗瑋廠']['成型'].total + analysis['宗瑋廠']['組裝'].total;
             const bossTotal = analysis['博士廠']['成型'].total + analysis['博士廠']['組裝'].total;
             const leakCount = allIssues['漏報工'] || 0, qtyCount = allIssues['數量錯誤'] || 0, startUpCount = allIssues['未送啟始件(後補)'] || 0;
 
             let p1, p2, p3;
-            // 1. 跨廠
             if (Math.abs(zwTotal - bossTotal) > 20) {
                 const h = zwTotal > bossTotal ? '宗瑋廠' : '博士廠';
                 p1 = { title: "現場管理強度檢視", content: `兩廠異常差距顯著 (宗瑋${zwTotal} vs 博士${bossTotal})。建議優先檢視**${h}**的基層幹部巡查落實度，確認是否因生產步調快而忽略了表單填寫紀律。` };
             } else {
                 p1 = { title: "標準作業一致性", content: "兩廠異常頻率接近，建議由生管或品保單位主導，統一兩廠的**報工填寫規範**與**交接班SOP**，避免因人員調動產生認知誤差。" };
             }
-            // 2. 類型
             if (leakCount > qtyCount && leakCount > startUpCount) {
-                p2 = { title: "交班點檢落實", content: `本期**漏報工**比例偏高 (${leakCount}次)。建議要求領班於每日下班前執行**報工核對**，強化人員記憶。` };
+                p2 = { title: "交班點檢落實", content: `本期**漏報工**比例偏高 (${leakCount}次)。建議要求領班於每日下班前執行**末件核對**，並強制落實紙本/看板的生產日誌簽核，強化人員記憶。` };
             } else if (qtyCount > leakCount && qtyCount > startUpCount) {
                 p2 = { title: "計數方式優化", content: `本期**數量錯誤**頻發 (${qtyCount}次)。建議檢討現場**容器定量化**（如固定裝箱數）的執行狀況，或增加電子秤重抽檢頻率，減少純人工點算的誤差。` };
             } else {
                 p2 = { title: "人員自主檢查", content: "各類異常分佈平均，顯示現場人員對異常情境的判斷不一。建議在早會時進行**案例宣導**，明確定義各類異常的正確回報流程。" };
             }
-            // 3. 通用
             p3 = { title: "績效考核連結", content: "建議將報工正確率納入**班組競賽**或**個人績效指標(KPI)**。針對低錯誤率的人員給予公開表揚，營造重視數據準確性的團隊氛圍。" };
             return { summary: "資深數據顧問策略觀點 (基於本期數據)：", isStructured: true, list: [p1, p2, p3] };
         }
 
-        // --- PDF 匯出 ---
+        // --- PDF 匯出修復版 ---
         const exportModal = document.getElementById('exportModal');
-        document.getElementById('openExportModalBtn').addEventListener('click', () => exportModal.style.display = 'flex');
+        document.getElementById('openExportModalBtn').addEventListener('click', () => {
+             // 檢查是否已有資料
+            if(Object.keys(charts).length === 0 && !document.getElementById('zongweiMoldingTotal').innerText.includes('次')) {
+                alert('請先進行分析後再匯出 PDF。');
+                return;
+            }
+            exportModal.style.display = 'flex';
+        });
         document.getElementById('cancelPdfBtn').addEventListener('click', () => exportModal.style.display = 'none');
         window.onclick = (e) => { if(e.target == exportModal) exportModal.style.display = 'none'; };
 
@@ -882,14 +892,32 @@
         window.moveDown = function(btn) { const i=btn.closest('.sortable-item'), n=i.nextElementSibling; if(n) i.parentNode.insertBefore(n, i); };
 
         async function exportSelectedPdf() {
+            if (typeof window.jspdf === 'undefined' || typeof html2canvas === 'undefined') {
+                alert('系統元件尚未載入完成，請確認網路連線或稍後再試。');
+                return;
+            }
+
             const items = document.querySelectorAll('.sortable-item');
             let renderQueue = [];
             const header = document.getElementById('pdfTitleHeader'), range = document.getElementById('dateRangeDisplay'), controls = document.querySelector('.trend-controls');
+            
             renderQueue.push({ element: header }); renderQueue.push({ element: range });
-            items.forEach(i => { if(i.querySelector('input').checked) renderQueue.push({ element: document.getElementById(i.getAttribute('data-id')) }); });
+            items.forEach(i => { 
+                const chk = i.querySelector('input');
+                const id = i.getAttribute('data-id');
+                const el = document.getElementById(id);
+                if(chk.checked && el) renderQueue.push({ element: el }); 
+            });
 
-            exportModal.style.display = 'none'; document.getElementById('loading').classList.add('show');
-            header.style.display = 'block'; if(controls) controls.style.display = 'none'; // 隱藏控制列
+            if (renderQueue.length <= 2) { alert('未選擇任何區塊或無資料可匯出'); return; }
+
+            exportModal.style.display = 'none'; 
+            document.getElementById('loading').classList.add('show');
+            
+            // 準備匯出環境
+            header.style.display = 'block'; 
+            if(controls) controls.style.display = 'none'; // 隱藏控制列
+            window.scrollTo(0, 0); // 強制滾動到頂部避免截圖錯誤
 
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF('p', 'mm', 'a4');
@@ -899,15 +927,30 @@
             try {
                 for (let item of renderQueue) {
                     if(!item.element) continue;
-                    const c = await html2canvas(item.element, { scale: 2, useCORS: true, logging: false, backgroundColor: "#ffffff", windowWidth: 1600 });
+                    // 使用 html2canvas 截圖
+                    const c = await html2canvas(item.element, { 
+                        scale: 2, 
+                        useCORS: true, 
+                        logging: false, 
+                        backgroundColor: "#ffffff", 
+                        windowWidth: 1600,
+                        scrollY: -window.scrollY // 修正滾動偏移
+                    });
                     const rH = (c.height * cW) / c.width;
                     if (cY + rH > cH) { pdf.addPage(); cY = m; }
                     pdf.addImage(c.toDataURL('image/jpeg', 0.95), 'JPEG', m, cY, cW, rH);
                     cY += rH + 5;
                 }
                 pdf.save(`MES報工分析_${new Date().toLocaleDateString().replace(/\//g, '-')}.pdf`);
-            } catch (e) { alert('匯出錯誤'); } 
-            finally { header.style.display = 'none'; if(controls) controls.style.display = 'flex'; document.getElementById('loading').classList.remove('show'); }
+            } catch (e) { 
+                console.error(e); 
+                alert('匯出 PDF 時發生錯誤: ' + e.message); 
+            } finally { 
+                // 恢復環境
+                header.style.display = 'none'; 
+                if(controls) controls.style.display = 'flex'; 
+                document.getElementById('loading').classList.remove('show'); 
+            }
         }
 
         window.onload = () => { setDefaultDates(); setupFileUpload(); };
