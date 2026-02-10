@@ -1010,12 +1010,13 @@
                 - 宗瑋廠主要異常人員數(>3次)：${Object.keys(zwMolding.personnel).length + Object.keys(zwAssy.personnel).length} 人
                 - 博士廠主要異常人員數(>3次)：${Object.keys(bsMolding.personnel).length + Object.keys(bsAssy.personnel).length} 人
 
-                請遵守以下嚴格規則：
-                1. 請直接回傳 HTML 代碼 (例如 <ul><li><b>標題</b>: 內容</li></ul>)。
-                2. 嚴禁使用 Markdown 程式碼區塊 (不要用 \`\`\` 包覆)。
-                3. 嚴禁使用 Markdown 的粗體語法 (**)，若需強調請一律使用 <b> 標籤。
-                4. 語氣請自然、專業、有溫度，像一位真人在寫 email 給客戶，不要有機器生成的條列感或生硬語句。
-                5. 請針對「現場管理」、「人員操作」、「系統流程」三個面向給出建議。
+                請遵守以下嚴格規則（Violation will result in penalty）：
+                1. **嚴禁**出現任何信件格式、問候語（如「您好」、「尊敬的客戶」）或結尾語（如「祝順心」、「顧問敬上」）。
+                2. **不需要**任何開場白（如「根據數據分析...」），請直接列出三點建議。
+                3. 請直接回傳 HTML 代碼 (格式為 <ul><li><b>標題</b>: 內容</li></ul>)。
+                4. 嚴禁使用 Markdown 程式碼區塊 (不要用 \`\`\` 包覆)。
+                5. 嚴禁使用 Markdown 的粗體語法 (**)，若需強調請一律使用 <b> 標籤。
+                6. 內容請針對「現場管理」、「人員操作」、「系統流程」三個面向，語氣專業、簡潔、直接。
             `;
 
             // 設定預設模型 (gemini-1.5-flash)
