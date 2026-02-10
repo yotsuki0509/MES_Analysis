@@ -316,14 +316,14 @@
         .modal-btns { display: flex; gap: 10px; margin-top: 20px; }
         .cancel-btn { background: #eee; color: #666; }
 
-        /* 頁尾樣式 (修正 padding，防止裁切) */
+        /* 頁尾樣式 */
         .report-footer {
             margin-top: 50px;
             padding-top: 20px;
-            padding-bottom: 20px; /* 增加底部內距 */
+            padding-bottom: 20px; 
             border-top: 1px solid #e0e0e0;
             text-align: center;
-            background-color: white; /* 確保背景色 */
+            background-color: white;
         }
         .report-footer h3 {
             color: #333;
@@ -974,10 +974,14 @@
             `本期共計 <b>${cnt}</b> 位人員發生次數>3次，應加強操作指導。` : "人員報工表現穩定。"}</p>`, isMerged: true };
         }
         
+        // 修改：產生可編輯的 HTML，並帶入預設值
         function generateEditableRecommendations(a, t) {
+            const defaultContent = `<div>1. SOP 執行確認：主管應針對異常人員進行現場查核或訓練。</div>
+                                    <div>2. 即時回報：系統使用上有問題應第一時間通知，避免流程錯誤。</div>
+                                    <div>3. 數量核對：落實每日生產數與實際報工數之比對流程。</div>`;
             return { 
                 isMerged: true, 
-                htmlContent: `<div class="editable-advice-box" contenteditable="true" placeholder="點擊此處輸入您的觀察結論與建議改善方向..."></div>`
+                htmlContent: `<div class="editable-advice-box" contenteditable="true" placeholder="點擊此處輸入您的觀察結論與建議改善方向...">${defaultContent}</div>`
             };
         }
         
@@ -1058,7 +1062,6 @@
                     });
                     const rH = (c.height * cW) / c.width;
                     
-                    // 修正邏輯：增加 10mm 的緩衝區，確保不會剛好卡在底邊
                     if (cY + rH > cH - 10) { 
                         pdf.addPage(); 
                         cY = m; 
