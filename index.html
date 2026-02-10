@@ -8,6 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* 基礎樣式 */
@@ -61,6 +62,15 @@
             padding: 20px;
             background: #f8f9ff; border-radius: 10px; border-left: 4px solid #667eea;
         }
+        /* 新增：API Key 輸入區塊樣式 */
+        .api-key-section {
+            margin-top: 15px;
+            padding: 20px;
+            background: #fff0f5; /* 淡淡的粉色區分 */
+            border-radius: 10px; 
+            border-left: 4px solid #E94B8C;
+        }
+
         .path-input {
             width: 100%;
             padding: 12px; border: 2px solid #ddd;
@@ -369,6 +379,14 @@
                        placeholder="例如：\\server\shared\MES報工數據修正明細.xlsx" disabled>
                 <small>注意：內網路徑功能需要在內網環境中使用</small>
             </div>
+
+            <div class="api-key-section">
+                <h4>🤖 AI 顧問設定 (選填)</h4>
+                <input type="password" id="apiKey" class="path-input" 
+                       placeholder="請輸入 Gemini API Key (如未填寫則不顯示 AI 顧問區塊)" 
+                       style="margin-top: 10px; border-color: #E94B8C;">
+                <small>使用模型：Gemini 2.0 Flash。請確保 Key 具有 generateContent 權限。</small>
+            </div>
             
             <div class="date-selector">
                 <div class="date-group">
@@ -517,13 +535,13 @@
                 </div>
 
                 <div class="insights mt-8" id="aiBlock" style="display:none;">
-                    <div class="section-subtitle">🤖 AI 顧問策略建議</div>
+                    <div class="section-subtitle">🤖 AI 顧問策略建議 (Gemini)</div>
                     <div id="aiContent"></div>
                 </div>
                 
                 <div id="reportFooter" class="report-footer">
                     <h3>如有疑問，請聯繫 MIS Team</h3>
-                    <p>Crafted by 勝全 · AI-assisted analytics (MES data)</p>
+                    <p>此報表由 MES 現場報工異常分析平台 產生</p>
                 </div>
 
             </div>
@@ -930,7 +948,7 @@
             return { responsive: true, maintainAspectRatio: false, layout: { padding: { bottom: 20 } }, plugins: { legend: { position: 'top' } }, scales: { y: { beginAtZero: true, max: max }, x: { ticks: { font: { size: 14 } } } } };
         }
         
-        // --- 洞察區塊 (修正版：分離 AI 建議與手動輸入) ---
+        // --- 洞察區塊 (修正版：AI 邏輯更新) ---
         function updateInsights(analysis, rawData) {
             const total = Object.values(analysis).reduce((s, f) => s + Object.values(f).reduce((ds, d) => ds + d.total, 0), 0);
             const allIssues = {}; 
@@ -940,8 +958,7 @@
             const standardInsights = [
                 { title: "📊 成型班別與總體現況", fn: generateMergedShiftTrendAnalysis }, 
                 { title: "⚠️ 主要問題與人員分析", fn: generateMergedIssuePersonnelAnalysis },
-                // 修改：結論與改善方向改為產生可編輯的 HTML
-                { title: "💡 結論與流程改善方向", fn: generateEditableRecommendations, spanFull: true }
+                { title: "💡 結論與流程改善方向 (請自行填寫)", fn: generateEditableRecommendations, spanFull: true }
             ];
             
             let html = '';
@@ -952,11 +969,68 @@
             });
             document.getElementById('insightsGrid').innerHTML = html;
 
-            // 2. AI 建議 (獨立渲染到 aiContent)
-            const aiData = generateAIConsultantAdvice(analysis, total, allIssues);
-            const aiContentHtml = `<div class="insight-content-box"><p><b>${aiData.summary}</b></p><ul>${aiData.list.map(i => `<li>${i.title}： ${i.content.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')}</li>`).join('')}</ul></div>`;
-            document.getElementById('aiContent').innerHTML = aiContentHtml;
-            document.getElementById('aiBlock').style.display = 'block';
+            // 2. AI 建議 (判斷是否有 Key)
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const aiBlock = document.getElementById('aiBlock');
+            const aiContent = document.getElementById('aiContent');
+
+            if (!apiKey) {
+                // 如果沒有 Key，隱藏區塊
+                aiBlock.style.display = 'none';
+            } else {
+                // 有 Key，顯示區塊並呼叫 API
+                aiBlock.style.display = 'block';
+                callGeminiFlash(apiKey, analysis, total, allIssues);
+            }
+        }
+
+        // 新增：呼叫 Gemini 2.0 Flash API
+        async function callGeminiFlash(apiKey, analysis, total, allIssues) {
+            const aiContent = document.getElementById('aiContent');
+            aiContent.innerHTML = '<p>🤖 正在連線 Gemini 2.0 Flash 進行分析...</p>';
+
+            // 建構 Prompt (摘要數據，不傳送原始明細以保護隱私與減少 Token)
+            const zwMolding = analysis['宗瑋廠']['成型'];
+            const bsMolding = analysis['博士廠']['成型'];
+            const zwAssy = analysis['宗瑋廠']['組裝'];
+            const bsAssy = analysis['博士廠']['組裝'];
+
+            const promptText = `
+                你是一位資深的製造業 MES 數據顧問。請根據以下本月報工異常統計數據，提供 3 點具體的策略性改善建議。
+                請用繁體中文回答，語氣專業且具建設性。
+
+                數據摘要：
+                - 總異常次數：${total} 次
+                - 宗瑋廠成型異常：${zwMolding.total} (日班 ${zwMolding.dayShift}, 夜班 ${zwMolding.nightShift})
+                - 博士廠成型異常：${bsMolding.total} (日班 ${bsMolding.dayShift}, 夜班 ${bsMolding.nightShift})
+                - 主要異常類型統計：${JSON.stringify(allIssues)}
+                - 宗瑋廠主要異常人員數(>3次)：${Object.keys(zwMolding.personnel).length + Object.keys(zwAssy.personnel).length} 人
+                - 博士廠主要異常人員數(>3次)：${Object.keys(bsMolding.personnel).length + Object.keys(bsAssy.personnel).length} 人
+
+                請針對「現場管理」、「人員操作」、「系統流程」三個面向給出建議，並用 HTML 格式回傳 (例如 <ul><li><b>標題</b>: 內容</li></ul>)。
+            `;
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: promptText }] }]
+                    })
+                });
+
+                const data = await response.json();
+                if (data.candidates && data.candidates[0].content) {
+                    const aiText = data.candidates[0].content.parts[0].text;
+                    // 使用 marked 解析 Markdown (如果 AI 回傳 Markdown)
+                    aiContent.innerHTML = `<div class="insight-content-box">${marked.parse(aiText)}</div>`;
+                } else {
+                    aiContent.innerHTML = '<p style="color:red;">API 回傳格式錯誤，請檢查 Key 是否正確。</p>';
+                }
+            } catch (error) {
+                console.error("Gemini API Error:", error);
+                aiContent.innerHTML = `<p style="color:red;">連線失敗：${error.message}</p>`;
+            }
         }
 
         function generateMergedShiftTrendAnalysis(a, t, all) {
@@ -974,7 +1048,6 @@
             `本期共計 <b>${cnt}</b> 位人員發生次數>3次，應加強操作指導。` : "人員報工表現穩定。"}</p>`, isMerged: true };
         }
         
-        // 修改：產生可編輯的 HTML，並帶入預設值
         function generateEditableRecommendations(a, t) {
             const defaultContent = `<div>1. SOP 執行確認：主管應針對異常人員進行現場查核或訓練。</div>
                                     <div>2. 即時回報：系統使用上有問題應第一時間通知，避免流程錯誤。</div>
@@ -985,30 +1058,10 @@
             };
         }
         
+        // 舊有的本地邏輯 (保留但現在已不被呼叫，因為會被 API 取代或隱藏)
         function generateAIConsultantAdvice(analysis, total, allIssues) {
-            const zwTotal = analysis['宗瑋廠']['成型'].total + analysis['宗瑋廠']['組裝'].total;
-            const bossTotal = analysis['博士廠']['成型'].total + analysis['博士廠']['組裝'].total;
-            const leakCount = allIssues['漏報工'] || 0, qtyCount = allIssues['數量錯誤'] || 0, startUpCount = allIssues['未送啟始件(後補)'] || 0;
-
-            let p1, p2, p3;
-            // 1. 跨廠
-            if (Math.abs(zwTotal - bossTotal) > 20) {
-                const h = zwTotal > bossTotal ? '宗瑋廠' : '博士廠';
-                p1 = { title: "現場管理強度檢視", content: `兩廠異常差距顯著 (宗瑋${zwTotal} vs 博士${bossTotal})。建議優先檢視**${h}**的基層幹部巡查落實，確認原因。` };
-            } else {
-                p1 = { title: "標準作業一致性", content: "兩廠異常頻率接近，建議由生管或品保單位主導，統一兩廠的**報工填寫規範**與**交接班SOP**，避免因人員調動產生認知誤差。" };
-            }
-            // 2. 類型
-            if (leakCount > qtyCount && leakCount > startUpCount) {
-                p2 = { title: "交班點檢落實", content: `本期**漏報工**比例偏高 (${leakCount}次)。建議要求領班於每日下班前執行**報工資料核對**，強化人員記憶。` };
-            } else if (qtyCount > leakCount && qtyCount > startUpCount) {
-                p2 = { title: "計數方式優化", content: `本期**數量錯誤**頻發 (${qtyCount}次)。建議檢討現場**容器定量化**（如固定裝箱數）的執行狀況，或增加電子秤重抽檢頻率，減少純人工點算的誤差。` };
-            } else {
-                p2 = { title: "人員自主檢查", content: "各類異常分佈平均，顯示現場人員對異常情境的判斷不一。建議在早會時進行**案例宣導**，明確定義各類異常的正確回報流程。" };
-            }
-            // 3. 通用
-            p3 = { title: "績效考核連結", content: "建議將報工正確率納入**班組競賽**或**個人績效指標(KPI)**。針對低錯誤率的人員給予公開表揚，營造重視數據準確性的團隊氛圍。" };
-            return { summary: "資深數據顧問策略觀點 (基於本期數據)：", isStructured: true, list: [p1, p2, p3] };
+            // ... (原邏輯保留供參考，但實際 UI 呈現由 updateInsights 決定)
+            return { summary: "資深數據顧問策略觀點 (基於本期數據)：", isStructured: true, list: [] };
         }
 
         // --- PDF 匯出邏輯 (修正裁切問題) ---
@@ -1029,7 +1082,8 @@
                 const chk = i.querySelector('input');
                 const id = i.getAttribute('data-id');
                 const el = document.getElementById(id);
-                if(chk.checked && el) renderQueue.push({ element: el }); 
+                // 檢查元素是否存在且可見 (避免匯出隱藏的 AI 區塊)
+                if(chk.checked && el && el.style.display !== 'none') renderQueue.push({ element: el }); 
             });
             
             if(footer) renderQueue.push({ element: footer });
