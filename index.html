@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MES現場報工異常分析平台</title>
-    <!-- 引入外部函式庫 -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
@@ -19,7 +18,7 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
-            font-size: 1.0rem; 
+            font-size: 1.0rem;
         }
         
         .container {
@@ -58,22 +57,26 @@
         .upload-area h3 { font-size: 1.4rem; }
         
         .path-input-section {
-            margin-top: 25px; padding: 20px;
+            margin-top: 25px;
+            padding: 20px;
             background: #f8f9ff; border-radius: 10px; border-left: 4px solid #667eea;
         }
         .path-input {
-            width: 100%; padding: 12px; border: 2px solid #ddd;
+            width: 100%;
+            padding: 12px; border: 2px solid #ddd;
             border-radius: 8px; font-size: 1rem; margin-top: 15px;
         }
         
         /* 日期選擇與按鈕 */
         .date-selector {
-            display: flex; gap: 20px; justify-content: center;
+            display: flex;
+            gap: 20px; justify-content: center;
             align-items: center; margin-top: 25px; flex-wrap: wrap; font-size: 1rem;
         }
         .date-group { display: flex; align-items: center; gap: 10px; }
         .date-input {
-            padding: 10px 15px; border: 2px solid #ddd;
+            padding: 10px 15px;
+            border: 2px solid #ddd;
             border-radius: 8px; font-size: 1rem; transition: border-color 0.3s;
         }
         .date-input:focus { outline: none; border-color: #667eea; }
@@ -92,27 +95,32 @@
         .dashboard.show { display: block; }
         
         .date-range-display {
-            text-align: center; background: rgba(102, 126, 234, 0.1);
+            text-align: center;
+            background: rgba(102, 126, 234, 0.1);
             padding: 15px; border-radius: 12px; margin-bottom: 30px;
             font-size: 2.2rem; font-weight: 700; color: #333;
         }
         
         .section-subtitle {
-            font-size: 2.6rem; font-weight: 700; color: #333;
+            font-size: 2.6rem;
+            font-weight: 700; color: #333;
             margin-bottom: 22px; text-align: center;
             background: rgba(102, 126, 234, 0.1); padding: 16px; border-radius: 15px;
         }
         
         .factory-row { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px; }
         .factory-card {
-            background: white; border-radius: 16px; padding: 25px; 
+            background: white;
+            border-radius: 16px; padding: 25px; 
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(102, 126, 234, 0.1); transition: transform 0.3s ease;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            transition: transform 0.3s ease;
         }
         .factory-card:hover { transform: translateY(-5px); }
         
         .factory-title {
-            font-size: 1.8rem; font-weight: 700; margin-bottom: 15px;
+            font-size: 1.8rem;
+            font-weight: 700; margin-bottom: 15px;
             text-align: center; padding: 15px; border-radius: 12px; color: white;
         }
         .molding-title { background: linear-gradient(135deg, #4A90E2, #357ABD); }
@@ -120,7 +128,8 @@
         
         /* 統計數字 */
         .stats-group-title {
-            font-size: 1.4rem; font-weight: 600; color: #4A90E2;
+            font-size: 1.4rem;
+            font-weight: 600; color: #4A90E2;
             margin-bottom: 8px; padding-bottom: 6px; border-bottom: 3px solid #E3F2FD;
         }
         .stats-row { display: flex; justify-content: space-between; margin-bottom: 4px; padding: 4px 0; }
@@ -129,7 +138,8 @@
         
         /* 圖表區域 (單月) */
         .detailed-chart-section {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 30px;
+            display: grid;
+            grid-template-columns: 1fr 1fr; gap: 30px;
             margin-top: 25px; padding-top: 15px; border-top: 2px solid #f0f0f0;
         }
         .detailed-chart-container {
@@ -141,41 +151,50 @@
             position: relative; width: 100%; overflow: hidden;
         }
         .detailed-chart-title {
-            text-align: center; font-size: 1.6rem; font-weight: 800;
+            text-align: center;
+            font-size: 1.6rem; font-weight: 800;
             color: #4A90E2; margin-bottom: 20px; letter-spacing: 1px;
         }
         
         /* 趨勢圖表區域 (多月) */
         .trend-chart-section {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr; gap: 20px;
             margin-bottom: 40px; background: white; padding: 20px;
-            border-radius: 16px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
         .trend-controls {
-            display: flex; justify-content: center; align-items: center;
+            display: flex;
+            justify-content: center; align-items: center;
             gap: 15px; margin-bottom: 20px; padding: 15px;
             background: #f0f2ff; border-radius: 10px; border: 1px solid #dbeafe;
         }
         .trend-controls h4 { color: #667eea; font-weight: 700; margin-right: 10px; }
         .mini-btn {
-            background: #4A90E2; color: white; border: none;
+            background: #4A90E2;
+            color: white; border: none;
             padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 0.9rem;
         }
         .mini-btn:hover { background: #357ABD; }
 
         /* 人員分析 */
         .full-width-personnel-section {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 30px;
+            display: grid;
+            grid-template-columns: 1fr 1fr; gap: 30px;
             margin-top: 25px; padding-top: 15px; border-top: 2px solid #f0f0f0;
         }
         .personnel-section {
-            padding: 12px; background: #f8f9ff; border-radius: 15px; border-left: 5px solid #4A90E2;
+            padding: 12px;
+            background: #f8f9ff; border-radius: 15px; border-left: 5px solid #4A90E2;
         }
         .personnel-title {
-            font-size: 1.4rem; font-weight: 700; color: #4A90E2; margin-bottom: 12px; text-align: center;
+            font-size: 1.4rem;
+            font-weight: 700; color: #4A90E2; margin-bottom: 12px; text-align: center;
         }
         .personnel-item {
-            background: white; padding: 8px 15px; margin-bottom: 5px;
+            background: white;
+            padding: 8px 15px; margin-bottom: 5px;
             border-radius: 8px; display: flex; justify-content: space-between;
             border-left: 4px solid #E94B8C; font-size: 1.25rem;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
@@ -183,66 +202,105 @@
         .personnel-name { font-weight: 600; color: #333; }
         .personnel-count { font-weight: 700; color: #E94B8C; }
         .no-personnel {
-            color: #28a745; font-style: italic; text-align: center;
+            color: #28a745;
+            font-style: italic; text-align: center;
             padding: 15px; font-size: 1.1rem; font-weight: 600;
         }
         
         /* 洞察建議 */
         .insights {
-            background: white; border-radius: 16px; padding: 30px;
+            background: white;
+            border-radius: 16px; padding: 30px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(102, 126, 234, 0.1); margin-top: 30px;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            margin-top: 30px;
         }
         .insight-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px;
         }
         .insight-item {
-            background: #f8f9ff; border-left: 5px solid #667eea; padding: 15px; border-radius: 10px;
+            background: #f8f9ff;
+            border-left: 5px solid #667eea; padding: 15px; border-radius: 10px;
         }
         .insight-item h4 {
-            color: #667eea; margin-bottom: 12px; font-size: 1.5rem;
+            color: #667eea;
+            margin-bottom: 12px; font-size: 1.5rem;
             font-weight: 700; text-align: left;
         }
         .insight-content-box {
-            margin-top: 10px; padding: 12px 15px; border-radius: 8px;
+            margin-top: 10px;
+            padding: 12px 15px; border-radius: 8px;
             background-color: white; border: 1px solid #e0e7ff;
         }
         .insight-content-box p, .insight-content-box li {
-            color: #333; line-height: 1.6; font-size: 1.28rem;
+            color: #333;
+            line-height: 1.6; font-size: 1.28rem;
             margin-bottom: 8px; text-align: justify;
         }
         .insight-content-box li { margin-bottom: 8px; padding-left: 25px; text-indent: -20px; list-style: none; }
         .insight-content-box li::before {
-            content: "➔"; font-weight: bold; color: #E94B8C; margin-right: 10px; font-size: 1.1rem;
+            content: "➔";
+            font-weight: bold; color: #E94B8C; margin-right: 10px; font-size: 1.1rem;
+        }
+        
+        /* 新增：可編輯區域樣式 */
+        .editable-advice-box {
+            width: 100%;
+            min-height: 150px;
+            padding: 15px;
+            border: 2px dashed #667eea;
+            border-radius: 8px;
+            background-color: #fff;
+            color: #333;
+            font-size: 1.2rem;
+            line-height: 1.6;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .editable-advice-box:focus {
+            border-color: #4A5FC7;
+            box-shadow: 0 0 8px rgba(102, 126, 234, 0.3);
+            border-style: solid;
+        }
+        .editable-advice-box:empty:before {
+            content: attr(placeholder);
+            color: #999;
+            font-style: italic;
         }
 
         /* 預覽與載入 */
         .loading { display: none; text-align: center; padding: 30px; font-size: 1.4rem; color: #667eea; font-weight: 600; }
         .loading.show { display: block; }
         .preview-section {
-            margin-top: 25px; padding: 20px; background: #f8f9fa;
+            margin-top: 25px;
+            padding: 20px; background: #f8f9fa;
             border-radius: 10px; border-left: 5px solid #667eea; font-size: 1rem;
         }
         .field-status { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px; }
         .field-item {
-            background: white; padding: 10px 15px; border-radius: 6px;
+            background: white;
+            padding: 10px 15px; border-radius: 6px;
             font-size: 0.95rem; border-left: 4px solid #28a745;
         }
         .field-item.missing { border-left-color: #dc3545; }
 
         /* 彈窗樣式 */
         .modal {
-            display: none; position: fixed; z-index: 1000; left: 0; top: 0;
+            display: none;
+            position: fixed; z-index: 1000; left: 0; top: 0;
             width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);
             backdrop-filter: blur(4px); align-items: center; justify-content: center;
         }
         .modal-content {
-            background-color: white; padding: 30px; border-radius: 15px;
+            background-color: white;
+            padding: 30px; border-radius: 15px;
             width: 500px; max-width: 90%; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
         }
         .modal-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 20px; color: #4A5FC7; text-align: center; }
         .checkbox-item {
-            display: flex; align-items: center; justify-content: space-between;
+            display: flex;
+            align-items: center; justify-content: space-between;
             margin-bottom: 12px; padding: 10px; border-radius: 8px;
             background: #f8f9ff; transition: background 0.2s;
         }
@@ -250,12 +308,31 @@
         .checkbox-label { flex-grow: 1; font-size: 1rem; display: flex; align-items: center; cursor: pointer; }
         .checkbox-item input[type="checkbox"] { width: 20px; height: 20px; margin-right: 15px; }
         .move-btn {
-            background: #fff; border: 1px solid #ccc; border-radius: 4px;
+            background: #fff;
+            border: 1px solid #ccc; border-radius: 4px;
             padding: 2px 8px; cursor: pointer; font-size: 0.8rem;
         }
         .move-btn:hover { background: #eee; }
         .modal-btns { display: flex; gap: 10px; margin-top: 20px; }
         .cancel-btn { background: #eee; color: #666; }
+
+        /* 頁尾樣式 */
+        .report-footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            text-align: center;
+        }
+        .report-footer h3 {
+            color: #333;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .report-footer p {
+            color: #888;
+            font-size: 0.9rem;
+        }
 
         @media (min-width: 1024px) {
             .insight-grid { grid-template-columns: 1fr 1fr; }
@@ -311,7 +388,6 @@
                 <button id="openExportModalBtn" class="analyze-btn">匯出報表為PDF</button>
             </div>
             
-            <!-- 匯出內容包裝器 -->
             <div id="pdfContentWrapper" class="bg-white p-2">
                 <div id="pdfTitleHeader" style="display:none; text-align:center; padding: 20px 0;">
                     <h1 style="font-size: 32px; font-weight: bold; margin-bottom: 10px;">MES現場報工異常分析報告</h1>
@@ -320,7 +396,6 @@
 
                 <div class="date-range-display" id="dateRangeDisplay"></div>
                 
-                <!-- 區塊0: 趨勢分析 -->
                 <div id="trendBlock" style="display:none;">
                     <div class="section-subtitle">📈 異常趨勢走勢分析</div>
                     
@@ -349,7 +424,6 @@
                     </div>
                 </div>
 
-                <!-- 區塊1: 成型部門 -->
                 <div id="moldingBlock">
                     <div class="section-subtitle">🔧 成型部門現況 (單月分析)</div>
                     <div class="factory-row">
@@ -398,7 +472,6 @@
                     </div>
                 </div>
                 
-                <!-- 區塊2: 組裝部門 -->
                 <div id="assemblyBlock" class="mt-8">
                     <div class="section-subtitle">📦 組裝部門現況 (單月分析)</div>
                     <div class="factory-row">
@@ -436,22 +509,25 @@
                     </div>
                 </div>
                 
-                <!-- 區塊3: 觀察與建議 -->
                 <div class="insights mt-8" id="insightsSection">
                     <div class="section-subtitle">📊 客觀現況觀察與建議</div>
                     <div class="insight-grid" id="insightsGrid"></div>
                 </div>
 
-                <!-- 區塊4: AI 建議 (獨立容器) -->
                 <div class="insights mt-8" id="aiBlock" style="display:none;">
                     <div class="section-subtitle">🤖 AI 顧問策略建議</div>
                     <div id="aiContent"></div>
                 </div>
+                
+                <div id="reportFooter" class="report-footer">
+                    <h3>如有疑問，請聯繫 MIS Team</h3>
+                    <p>此報表由 MES 現場報工異常分析平台 產生</p>
+                </div>
+
             </div>
         </div>
     </div>
 
-    <!-- 匯出選項彈窗 -->
     <div id="exportModal" class="modal">
         <div class="modal-content">
             <div class="modal-title">📄 PDF 匯出順序設定</div>
@@ -493,7 +569,7 @@
         let charts = {};
         const TARGET_FIELDS = ['廠別', '部門', '調整日期', '報工人員1', '班別', '調整原因'];
         const MAIN_ISSUES = ['漏報工', '數量錯誤', '未送啟始件(後補)', '其他/未分類'];
-        
+
         // --- 輔助工具 ---
         function excelDateToISOString(serial) {
             if (typeof serial !== 'number' || isNaN(serial) || serial <= 0) return null;
@@ -512,7 +588,6 @@
             const lastDayLastMonth = new Date(today.getFullYear(), today.getMonth(), 0);
             const formatDate = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
             const formatMonth = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-
             document.getElementById('startDate').value = formatDate(firstDayLastMonth);
             document.getElementById('endDate').value = formatDate(lastDayLastMonth);
             document.getElementById('trendEndMonth').value = formatMonth(lastDayLastMonth);
@@ -536,14 +611,13 @@
             uploadArea.addEventListener('click', () => fileInput.click());
             uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.classList.add('dragover'); });
             
-            uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover')); 
-            
+            uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
             uploadArea.addEventListener('drop', (e) => {
                 e.preventDefault(); uploadArea.classList.remove('dragover');
                 if (e.dataTransfer.files.length > 0) handleFile(e.dataTransfer.files[0]);
             });
             fileInput.addEventListener('change', (e) => { if (e.target.files.length > 0) handleFile(e.target.files[0]); });
-            
+
             // 按鈕功能
             analyzeBtn.addEventListener('click', analyzeData);
             updateTrendBtn.addEventListener('click', () => { if(excelData.length > 0) generateTrendCharts(excelData); });
@@ -562,7 +636,6 @@
                 }
                 exportModal.style.display = 'flex';
             });
-            
             cancelPdfBtn.addEventListener('click', () => exportModal.style.display = 'none');
             confirmPdfBtn.addEventListener('click', exportSelectedPdf);
             
@@ -643,7 +716,7 @@
                     }
                 } catch (error) { console.error(error); alert('分析過程發生錯誤: ' + error.message); }
                 finally { document.getElementById('loading').classList.remove('show'); }
-            }, 100); 
+            }, 100);
         }
         
         function generateAnalysisReport(data, startDate, endDate) {
@@ -740,6 +813,7 @@
                 const department = getDepartment(row);
                 if (factory && department && result[factory][department]) result[factory][department].push(row);
             });
+
             const stats = {};
             Object.keys(result).forEach(factory => {
                 stats[factory] = {};
@@ -778,7 +852,8 @@
                     p1.toString().split('/').forEach(n => { n = n.trim(); if(n) { if(!p[n]) p[n]={total:0}; p[n].total++; } });
                 }
             });
-            const r = {}; Object.keys(p).forEach(k => { if(p[k].total > 3) r[k] = { total: p[k].total }; }); return r;
+            const r = {}; Object.keys(p).forEach(k => { if(p[k].total > 3) r[k] = { total: p[k].total }; });
+            return r;
         }
         
         // --- 視圖更新 ---
@@ -826,7 +901,8 @@
         }
         
         function updatePersonnelDisplay(id, tid, p, txt) {
-            const el = document.getElementById(id); document.getElementById(tid).textContent = `${txt} (${Object.keys(p).length}位)`;
+            const el = document.getElementById(id);
+            document.getElementById(tid).textContent = `${txt} (${Object.keys(p).length}位)`;
             if (Object.keys(p).length === 0) { el.innerHTML = '<div class="no-personnel">✅ 無人員發生次數大於3次</div>'; return; }
             let html = '<div class="personnel-grid"><ul class="personnel-list">';
             Object.keys(p).map(n=>({n:n, c:p[n].total})).sort((a,b)=>b.c-a.c).forEach(i => {
@@ -838,7 +914,8 @@
         function generateDetailedCharts(analysis) {
             ['zongweiDetailed','bossDetailed'].forEach(k => { if(charts[k]) charts[k].destroy(); });
             const z = analysis['宗瑋廠']['成型'].detailedIssues, b = analysis['博士廠']['成型'].detailedIssues, l = MAIN_ISSUES.slice(0, 3);
-            let max = 0; l.forEach(i => max = Math.max(max, z.day[i], z.night[i], b.day[i], b.night[i]));
+            let max = 0;
+            l.forEach(i => max = Math.max(max, z.day[i], z.night[i], b.day[i], b.night[i]));
             const dispMax = max < 5 ? 5 : Math.ceil((max+1)/5)*5;
             const config = (d) => ({
                 type: 'bar', data: { labels: l, datasets: [{label:'日班',data:l.map(i=>d.day[i]),backgroundColor:'rgba(75, 192, 192, 0.8)'},{label:'夜班',data:l.map(i=>d.night[i]),backgroundColor:'rgba(255, 159, 64, 0.8)'}] },
@@ -851,7 +928,7 @@
             return { responsive: true, maintainAspectRatio: false, layout: { padding: { bottom: 20 } }, plugins: { legend: { position: 'top' } }, scales: { y: { beginAtZero: true, max: max }, x: { ticks: { font: { size: 14 } } } } };
         }
         
-        // --- 洞察區塊 (修正版：分離 AI 建議) ---
+        // --- 洞察區塊 (修正版：分離 AI 建議與手動輸入) ---
         function updateInsights(analysis, rawData) {
             const total = Object.values(analysis).reduce((s, f) => s + Object.values(f).reduce((ds, d) => ds + d.total, 0), 0);
             const allIssues = {}; 
@@ -861,7 +938,8 @@
             const standardInsights = [
                 { title: "📊 成型班別與總體現況", fn: generateMergedShiftTrendAnalysis }, 
                 { title: "⚠️ 主要問題與人員分析", fn: generateMergedIssuePersonnelAnalysis },
-                { title: "💡 結論與流程改善方向", fn: generateRecommendations, spanFull: true }
+                // 修改：結論與改善方向改為產生可編輯的 HTML
+                { title: "💡 結論與流程改善方向 (請自行填寫)", fn: generateEditableRecommendations, spanFull: true }
             ];
             
             let html = '';
@@ -890,10 +968,17 @@
         function generateMergedIssuePersonnelAnalysis(a, t, all) {
             const l = all['漏報工']||0, q = all['數量錯誤']||0;
             let cnt = 0; Object.values(a).forEach(f => Object.values(f).forEach(d => cnt += Object.keys(d.personnel).length));
-            return { htmlContent: `<p>本期總異常 <b>${t}</b> 次：<b>漏報工</b> (${t>0?((l/t)*100).toFixed(1):0}%)、<b>數量錯誤</b> (${t>0?((q/t)*100).toFixed(1):0}%)。</p><hr style="margin: 15px 0; border-top: 2px solid #e0e7ff;"><p>${cnt > 0 ? `本期共計 <b>${cnt}</b> 位人員發生次數>3次，應加強操作指導。` : "人員報工表現穩定。"}</p>`, isMerged: true };
+            return { htmlContent: `<p>本期總異常 <b>${t}</b> 次：<b>漏報工</b> (${t>0?((l/t)*100).toFixed(1):0}%)、<b>數量錯誤</b> (${t>0?((q/t)*100).toFixed(1):0}%)。</p><hr style="margin: 15px 0; border-top: 2px solid #e0e7ff;"><p>${cnt > 0 ?
+            `本期共計 <b>${cnt}</b> 位人員發生次數>3次，應加強操作指導。` : "人員報工表現穩定。"}</p>`, isMerged: true };
         }
-        function generateRecommendations(a, t) {
-            return { summary: "建議改善方向：", isStructured: true, list: [{ title: "SOP 執行確認", content: "主管應針對異常人員進行現場查核或訓練。" }, { title: "即時回報", content: "系統使用上有問題應第一時間通知，避免流程錯誤。" }, { title: "數量核對", content: "落實每日生產數與實際報工數之比對流程。" }] };
+        
+        // 修改：產生可編輯的文字區塊
+        function generateEditableRecommendations(a, t) {
+            // 回傳一段 HTML，包含 contenteditable 的 div
+            return { 
+                isMerged: true, 
+                htmlContent: `<div class="editable-advice-box" contenteditable="true" placeholder="點擊此處輸入您的觀察結論與建議改善方向..."></div>`
+            };
         }
         
         function generateAIConsultantAdvice(analysis, total, allIssues) {
@@ -922,9 +1007,9 @@
             return { summary: "資深數據顧問策略觀點 (基於本期數據)：", isStructured: true, list: [p1, p2, p3] };
         }
 
-        // --- PDF 匯出邏輯 (防呆版) ---
+        // --- PDF 匯出邏輯 ---
         async function exportSelectedPdf() {
-            // 1. 檢查函式庫是否載入 (Intranet 檢查)
+            // 1. 檢查函式庫是否載入
             if (typeof window.jspdf === 'undefined' || typeof html2canvas === 'undefined') {
                 alert('⚠️ 錯誤：PDF 核心元件未載入。\n\n請檢查您的網路連線，或確認防火牆是否阻擋了 CDN (cdn.jsdelivr.net)。');
                 return;
@@ -933,15 +1018,20 @@
             const items = document.querySelectorAll('.sortable-item');
             let renderQueue = [];
             const header = document.getElementById('pdfTitleHeader'), range = document.getElementById('dateRangeDisplay'), controls = document.querySelector('.trend-controls');
-            
+            const footer = document.getElementById('reportFooter'); // 取得頁尾元素
+
             // 建立匯出佇列
-            renderQueue.push({ element: header }); renderQueue.push({ element: range });
+            renderQueue.push({ element: header });
+            renderQueue.push({ element: range });
             items.forEach(i => { 
                 const chk = i.querySelector('input');
                 const id = i.getAttribute('data-id');
                 const el = document.getElementById(id);
                 if(chk.checked && el) renderQueue.push({ element: el }); 
             });
+            
+            // 強制加入頁尾
+            if(footer) renderQueue.push({ element: footer });
 
             if (renderQueue.length <= 2) { alert('請至少勾選一個匯出項目'); return; }
 
@@ -951,7 +1041,7 @@
             document.getElementById('loading').classList.add('show');
             
             // 準備匯出環境 (顯示 Header, 隱藏按鈕)
-            header.style.display = 'block'; 
+            header.style.display = 'block';
             if(controls) controls.style.display = 'none'; 
             window.scrollTo(0, 0); // 重要：防止下方內容截圖空白
 
@@ -979,11 +1069,11 @@
                 }
                 pdf.save(`MES報工分析_${new Date().toLocaleDateString().replace(/\//g, '-')}.pdf`);
             } catch (e) { 
-                console.error(e); 
+                console.error(e);
                 alert('匯出 PDF 時發生錯誤: ' + e.message); 
             } finally { 
                 // 恢復環境
-                header.style.display = 'none'; 
+                header.style.display = 'none';
                 if(controls) controls.style.display = 'flex'; 
                 document.getElementById('loading').classList.remove('show'); 
             }
@@ -992,7 +1082,7 @@
         // 排序按鈕功能 (全域)
         window.moveUp = function(btn) { const i=btn.closest('.sortable-item'), p=i.previousElementSibling; if(p) i.parentNode.insertBefore(i, p); };
         window.moveDown = function(btn) { const i=btn.closest('.sortable-item'), n=i.nextElementSibling; if(n) i.parentNode.insertBefore(n, i); };
-
+        
         // 初始化
         window.onload = () => { setDefaultDates(); setupListeners(); };
     </script>
