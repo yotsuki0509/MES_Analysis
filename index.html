@@ -143,9 +143,9 @@
             margin-top: 25px; padding-top: 15px; border-top: 2px solid #f0f0f0;
         }
         .detailed-chart-container {
-            height: 450px; /* 加高 */
+            height: 450px;
             padding: 15px; 
-            padding-bottom: 30px; /* 底部空間 */
+            padding-bottom: 30px;
             background: #f8f9ff; border-radius: 15px;
             box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
             position: relative; width: 100%; overflow: hidden;
@@ -244,7 +244,7 @@
             font-weight: bold; color: #E94B8C; margin-right: 10px; font-size: 1.1rem;
         }
         
-        /* 新增：可編輯區域樣式 */
+        /* 可編輯區域樣式 */
         .editable-advice-box {
             width: 100%;
             min-height: 150px;
@@ -316,12 +316,14 @@
         .modal-btns { display: flex; gap: 10px; margin-top: 20px; }
         .cancel-btn { background: #eee; color: #666; }
 
-        /* 頁尾樣式 */
+        /* 頁尾樣式 (修正 padding，防止裁切) */
         .report-footer {
             margin-top: 50px;
             padding-top: 20px;
+            padding-bottom: 20px; /* 增加底部內距 */
             border-top: 1px solid #e0e0e0;
             text-align: center;
+            background-color: white; /* 確保背景色 */
         }
         .report-footer h3 {
             color: #333;
@@ -939,7 +941,7 @@
                 { title: "📊 成型班別與總體現況", fn: generateMergedShiftTrendAnalysis }, 
                 { title: "⚠️ 主要問題與人員分析", fn: generateMergedIssuePersonnelAnalysis },
                 // 修改：結論與改善方向改為產生可編輯的 HTML
-                { title: "💡 結論與流程改善方向", fn: generateEditableRecommendations, spanFull: true }
+                { title: "💡 結論與流程改善方向 (請自行填寫)", fn: generateEditableRecommendations, spanFull: true }
             ];
             
             let html = '';
@@ -972,9 +974,7 @@
             `本期共計 <b>${cnt}</b> 位人員發生次數>3次，應加強操作指導。` : "人員報工表現穩定。"}</p>`, isMerged: true };
         }
         
-        // 修改：產生可編輯的文字區塊
         function generateEditableRecommendations(a, t) {
-            // 回傳一段 HTML，包含 contenteditable 的 div
             return { 
                 isMerged: true, 
                 htmlContent: `<div class="editable-advice-box" contenteditable="true" placeholder="點擊此處輸入您的觀察結論與建議改善方向..."></div>`
@@ -1007,9 +1007,8 @@
             return { summary: "資深數據顧問策略觀點 (基於本期數據)：", isStructured: true, list: [p1, p2, p3] };
         }
 
-        // --- PDF 匯出邏輯 ---
+        // --- PDF 匯出邏輯 (修正裁切問題) ---
         async function exportSelectedPdf() {
-            // 1. 檢查函式庫是否載入
             if (typeof window.jspdf === 'undefined' || typeof html2canvas === 'undefined') {
                 alert('⚠️ 錯誤：PDF 核心元件未載入。\n\n請檢查您的網路連線，或確認防火牆是否阻擋了 CDN (cdn.jsdelivr.net)。');
                 return;
@@ -1018,9 +1017,8 @@
             const items = document.querySelectorAll('.sortable-item');
             let renderQueue = [];
             const header = document.getElementById('pdfTitleHeader'), range = document.getElementById('dateRangeDisplay'), controls = document.querySelector('.trend-controls');
-            const footer = document.getElementById('reportFooter'); // 取得頁尾元素
+            const footer = document.getElementById('reportFooter');
 
-            // 建立匯出佇列
             renderQueue.push({ element: header });
             renderQueue.push({ element: range });
             items.forEach(i => { 
@@ -1030,20 +1028,17 @@
                 if(chk.checked && el) renderQueue.push({ element: el }); 
             });
             
-            // 強制加入頁尾
             if(footer) renderQueue.push({ element: footer });
 
             if (renderQueue.length <= 2) { alert('請至少勾選一個匯出項目'); return; }
 
-            // 鎖定 UI 避免重複點擊
             const exportModal = document.getElementById('exportModal');
             exportModal.style.display = 'none'; 
             document.getElementById('loading').classList.add('show');
             
-            // 準備匯出環境 (顯示 Header, 隱藏按鈕)
             header.style.display = 'block';
             if(controls) controls.style.display = 'none'; 
-            window.scrollTo(0, 0); // 重要：防止下方內容截圖空白
+            window.scrollTo(0, 0);
 
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF('p', 'mm', 'a4');
@@ -1053,7 +1048,6 @@
             try {
                 for (let item of renderQueue) {
                     if(!item.element) continue;
-                    // 使用 html2canvas
                     const c = await html2canvas(item.element, { 
                         scale: 2, 
                         useCORS: true, 
@@ -1063,7 +1057,13 @@
                         scrollY: -window.scrollY 
                     });
                     const rH = (c.height * cW) / c.width;
-                    if (cY + rH > cH) { pdf.addPage(); cY = m; }
+                    
+                    // 修正邏輯：增加 10mm 的緩衝區，確保不會剛好卡在底邊
+                    if (cY + rH > cH - 10) { 
+                        pdf.addPage(); 
+                        cY = m; 
+                    }
+                    
                     pdf.addImage(c.toDataURL('image/jpeg', 0.95), 'JPEG', m, cY, cW, rH);
                     cY += rH + 5;
                 }
@@ -1072,18 +1072,15 @@
                 console.error(e);
                 alert('匯出 PDF 時發生錯誤: ' + e.message); 
             } finally { 
-                // 恢復環境
                 header.style.display = 'none';
                 if(controls) controls.style.display = 'flex'; 
                 document.getElementById('loading').classList.remove('show'); 
             }
         }
         
-        // 排序按鈕功能 (全域)
         window.moveUp = function(btn) { const i=btn.closest('.sortable-item'), p=i.previousElementSibling; if(p) i.parentNode.insertBefore(i, p); };
         window.moveDown = function(btn) { const i=btn.closest('.sortable-item'), n=i.nextElementSibling; if(n) i.parentNode.insertBefore(n, i); };
         
-        // 初始化
         window.onload = () => { setDefaultDates(); setupListeners(); };
     </script>
 </body>
