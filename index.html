@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MES現場報工異常分析平台</title>
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="[https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js](https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js)"></script>
+    <script src="[https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js](https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js)"></script>
+    <script src="[https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js](https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js)"></script>
+    <script src="[https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js](https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js)"></script>
+    <script src="[https://cdn.jsdelivr.net/npm/marked/marked.min.js](https://cdn.jsdelivr.net/npm/marked/marked.min.js)"></script>
+    <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
     <style>
         /* 基礎樣式 */
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -62,11 +62,11 @@
             padding: 20px;
             background: #f8f9ff; border-radius: 10px; border-left: 4px solid #667eea;
         }
-        /* 新增：API Key 輸入區塊樣式 */
+        /* API Key 輸入區塊樣式 */
         .api-key-section {
             margin-top: 15px;
             padding: 20px;
-            background: #fff0f5; /* 淡淡的粉色區分 */
+            background: #fff0f5; 
             border-radius: 10px; 
             border-left: 4px solid #E94B8C;
         }
@@ -984,12 +984,12 @@
             }
         }
 
-        // 新增：呼叫 Gemini 2.0 Flash API
+        // 新增：呼叫 Gemini 2.0 Flash API (修正紅框問題與機器語氣)
         async function callGeminiFlash(apiKey, analysis, total, allIssues) {
             const aiContent = document.getElementById('aiContent');
             aiContent.innerHTML = '<p>🤖 正在連線 Gemini 2.0 Flash 進行分析...</p>';
 
-            // 建構 Prompt (摘要數據，不傳送原始明細以保護隱私與減少 Token)
+            // 建構 Prompt
             const zwMolding = analysis['宗瑋廠']['成型'];
             const bsMolding = analysis['博士廠']['成型'];
             const zwAssy = analysis['宗瑋廠']['組裝'];
@@ -997,7 +997,6 @@
 
             const promptText = `
                 你是一位資深的製造業 MES 數據顧問。請根據以下本月報工異常統計數據，提供 3 點具體的策略性改善建議。
-                請用繁體中文回答，語氣專業且具建設性。
 
                 數據摘要：
                 - 總異常次數：${total} 次
@@ -1007,7 +1006,12 @@
                 - 宗瑋廠主要異常人員數(>3次)：${Object.keys(zwMolding.personnel).length + Object.keys(zwAssy.personnel).length} 人
                 - 博士廠主要異常人員數(>3次)：${Object.keys(bsMolding.personnel).length + Object.keys(bsAssy.personnel).length} 人
 
-                請針對「現場管理」、「人員操作」、「系統流程」三個面向給出建議，並用 HTML 格式回傳 (例如 <ul><li><b>標題</b>: 內容</li></ul>)。
+                請遵守以下嚴格規則：
+                1. 請直接回傳 HTML 代碼 (例如 <ul><li><b>標題</b>: 內容</li></ul>)。
+                2. 嚴禁使用 Markdown 程式碼區塊 (不要用 \`\`\` 包覆)。
+                3. 嚴禁使用 Markdown 的粗體語法 (**)，若需強調請一律使用 <b> 標籤。
+                4. 語氣請自然、專業、有溫度，像一位真人在寫 email 給客戶，不要有機器生成的條列感或生硬語句。
+                5. 請針對「現場管理」、「人員操作」、「系統流程」三個面向給出建議。
             `;
 
             try {
@@ -1021,9 +1025,13 @@
 
                 const data = await response.json();
                 if (data.candidates && data.candidates[0].content) {
-                    const aiText = data.candidates[0].content.parts[0].text;
-                    // 使用 marked 解析 Markdown (如果 AI 回傳 Markdown)
-                    aiContent.innerHTML = `<div class="insight-content-box">${marked.parse(aiText)}</div>`;
+                    let aiText = data.candidates[0].content.parts[0].text;
+                    
+                    // 關鍵修正：強制移除所有可能殘留的 Markdown 代碼區塊符號
+                    aiText = aiText.replace(/^```html\s*/i, '').replace(/^```\s*/i, '').replace(/```$/i, '').trim();
+
+                    // 直接使用 innerHTML 呈現 HTML，不經過 marked 解析，避免顯示原始碼
+                    aiContent.innerHTML = `<div class="insight-content-box">${aiText}</div>`;
                 } else {
                     aiContent.innerHTML = '<p style="color:red;">API 回傳格式錯誤，請檢查 Key 是否正確。</p>';
                 }
@@ -1060,7 +1068,6 @@
         
         // 舊有的本地邏輯 (保留但現在已不被呼叫，因為會被 API 取代或隱藏)
         function generateAIConsultantAdvice(analysis, total, allIssues) {
-            // ... (原邏輯保留供參考，但實際 UI 呈現由 updateInsights 決定)
             return { summary: "資深數據顧問策略觀點 (基於本期數據)：", isStructured: true, list: [] };
         }
 
