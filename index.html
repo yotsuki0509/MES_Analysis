@@ -1052,24 +1052,26 @@
             const bsAssy = analysis['博士廠']['組裝'];
 
             const promptText = `
-            你現在是 **宗瑋工廠 (Zong Wei Industry)** 的現場管理顧問，專精於 **「人為疏失防堵」** 與 **「作業紀律改善」**。
-            系統功能已運作正常，但現場人員操作紀律不彰。請根據以下 MES 報工異常數據，針對「人為因素」提出 3 點強硬且具體的管理改善對策。
+            你現在是 **宗瑋工廠** 的 MES 數據分析師，專精於推動 **「目視化管理 (Visual Management)」** 與 **「現場品質意識」**。
+            
+            目前工廠尚未實施扣薪或懲罰制度，管理風格以「數據揭露」與「正向引導」為主。
+            請分析以下 MES 報工異常數據，針對「人為疏失」提出 3 點具體、客觀，且能透過「公佈欄」或「團隊互助」來改善的建議。
         
-            【異常數據戰情】
-            - 本月總異常：${total} 筆
-            - 宗瑋廠分佈：${zwMolding.total} 筆 (日班 ${zwMolding.dayShift} / 夜班 ${zwMolding.nightShift})
-            - 博士廠分佈：${bsMolding.total} 筆 (日班 ${bsMolding.dayShift} / 夜班 ${bsMolding.nightShift})
-            - 異常類型詳情：${JSON.stringify(allIssues)}
-            - 累犯人員名單數：宗瑋廠 ${Object.keys(zwMolding.personnel).length + Object.keys(zwAssy.personnel).length} 人、博士廠 ${Object.keys(bsMolding.personnel).length + Object.keys(bsAssy.personnel).length} 人
+            【本月數據摘要】
+            - 總異常：${total} 筆
+            - 宗瑋廠：${zwMolding.total} 筆 (日班 ${zwMolding.dayShift} / 夜班 ${zwMolding.nightShift})
+            - 博士廠：${bsMolding.total} 筆 (日班 ${bsMolding.dayShift} / 夜班 ${bsMolding.nightShift})
+            - 異常類型：${JSON.stringify(allIssues)}
+            - 需關注人員：宗瑋廠 ${Object.keys(zwMolding.personnel).length + Object.keys(zwAssy.personnel).length} 人、博士廠 ${Object.keys(bsMolding.personnel).length + Object.keys(bsAssy.personnel).length} 人
         
-            【輸出規則 (Strict Output Rules)】
-            1. **格式限制**：僅回傳純 HTML 代碼，格式嚴格遵守：<ul><li><b>[策略標題]</b>: 具體執行內容 (約 50-60 字)</li></ul>。
-            2. **內容要求 (針對人為疏失)**：
-               - 第一點針對 **「人員課責 (Accountability)」**：針對數據中的累犯人員或特定班別，提出具體的「鎖定權限」、「公佈名單」或「強制再教育」措施。
-               - 第二點針對 **「作業防錯 (Operational Check)」**：不改系統前提下，如何增加「人為確認」關卡？(例如：上下班交接時的主管覆核、看板紅燈警示)。
-               - 第三點針對 **「績效連動 (KPI Linkage)」**：如何將這些異常數據轉化為工廠的獎懲依據，以提升操作專注度。
-            3. **語氣風格**：嚴肅、直指核心。不要講「建議加強宣導」這種空話，要講「實施」、「執行」、「列入考核」。
-            4. **禁止事項**：嚴禁 Markdown 語法 (如 \`\`\` 或 **)、嚴禁任何開場白或結尾問候。
+            【輸出規則】
+            1. **格式限制**：僅回傳純 HTML 代碼，格式：<ul><li><b>[策略標題]</b>: 具體執行內容 (約 50-60 字)</li></ul>。
+            2. **語氣風格**：客觀、理性、建設性。不使用責備字眼，而是強調「數據會說話」與「團隊責任」。
+            3. **內容要求 (軟性管理策略)**：
+               - 第一點針對 **「數據透明化 (Data Visibility)」**：如何利用 **「公佈欄」** 展示這些數據？(例如：每週張貼異常排行榜、紅榜/黑榜，讓數據產生自然的督促效果)。
+               - 第二點針對 **「班別互助 (Shift Handover)」**：建議日夜班交接時增加一道「口頭確認」或「簡易檢查」手續，避免錯誤延續。
+               - 第三點針對 **「操作標準化 (SOP Reminder)」**：針對 JSON 中頻率最高的錯誤，建議在現場張貼「單點課程 (OPL)」或簡易防呆標語。
+            4. **禁止事項**：嚴禁提到扣錢、記過、降級等懲罰手段。嚴禁 Markdown。
         
             現在，請直接生成 HTML 結果：
         `;
