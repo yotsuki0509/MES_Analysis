@@ -784,9 +784,9 @@
             const bossData = labels.map(m => monthlyStats[m].boss);
 
             // 修改：加大字體 (原本 14)
-            const commonFont = { size: 16, weight: 'bold', family: "'Inter', sans-serif" };
+            const commonFont = { size: 20, weight: 'bold', family: "'Inter', sans-serif" };
             // 修改：加大標題 (原本 16)
-            const titleFont = { size: 20, weight: 'bold' };
+            const titleFont = { size: 24, weight: 'bold' };
             const chartOptions = {
                 responsive: true, maintainAspectRatio: false,
                 layout: { padding: { bottom: 25, top: 10 } },
@@ -965,7 +965,7 @@
                         position: 'top',
                         labels: {
                             font: {
-                                size: 16, // ★ 關鍵：加大圖例文字
+                                size: 24, // ★ 關鍵：加大圖例文字
                                 weight: 'bold'
                             }
                         }
