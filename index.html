@@ -1052,29 +1052,27 @@
             const bsAssy = analysis['博士廠']['組裝'];
 
             const promptText = `
-                你現在是 **宗瑋工廠 (Zong Wei Industry)** 的首席 MES 流程優化專家，專精於 **塑膠射出成型 (Plastic Injection Molding)** 領域的現場數位化管理。
-                
-                請深入分析以下「${new Date().getMonth() + 1}月份 MES 報工異常數據」，找出阻礙數據準確性的根因，並提供 3 點「可立即執行」的改善策略。
-            
-                【數據戰情室】
-                - 總異常筆數：${total} 筆
-                - 宗瑋廠 (本廠) 狀況：共 ${zwMolding.total} 筆異常 (日班 ${zwMolding.dayShift} / 夜班 ${zwMolding.nightShift})
-                - 博士廠 (分廠) 狀況：共 ${bsMolding.total} 筆異常 (日班 ${bsMolding.dayShift} / 夜班 ${bsMolding.nightShift})
-                - 異常類型分佈 (JSON)：${JSON.stringify(allIssues)}
-                - 高頻異常人員 (重複犯錯 > 3次)：宗瑋廠 ${Object.keys(zwMolding.personnel).length + Object.keys(zwAssy.personnel).length} 人、博士廠 ${Object.keys(bsMolding.personnel).length + Object.keys(bsAssy.personnel).length} 人
-            
-                【輸出規則 (Strict Output Rules)】
-                1. **格式限制**：僅回傳純 HTML 代碼，格式嚴格遵守：<ul><li><b>[關鍵策略]</b>: 具體執行內容 (約 50 字)</li></ul>。
-                2. **內容要求**：
-                   - 第一點針對 **「系統防呆 (System Poka-yoke)」**：如何透過 UI/UX 調整直接阻斷錯誤？(例如：條碼防錯、連動機台訊號)。
-                   - 第二點針對 **「現場紀律 (Shop Floor Discipline)」**：針對日夜班差異或高頻異常人員的具體管理手段。
-                   - 第三點針對 **「流程優化 (Process Logic)」**：針對 JSON 中出現頻率最高的異常類型，提出流程面的解法。
-                3. **語氣風格**：嚴厲、精準、數據導向。禁止使用「建議...」、「可以考慮...」等軟性用語，直接使用祈使句（如「實施...」、「強制...」）。
-                4. **禁止事項**：嚴禁 Markdown 語法 (如 \`\`\` 或 **)、嚴禁任何開場白或結尾問候。
-            
-                現在，請直接生成 HTML 結果：
-            `;
-
+            你現在是 **宗瑋工廠 (Zong Wei Industry)** 的現場管理顧問，專精於 **「人為疏失防堵」** 與 **「作業紀律改善」**。
+            系統功能已運作正常，但現場人員操作紀律不彰。請根據以下 MES 報工異常數據，針對「人為因素」提出 3 點強硬且具體的管理改善對策。
+        
+            【異常數據戰情】
+            - 本月總異常：${total} 筆
+            - 宗瑋廠分佈：${zwMolding.total} 筆 (日班 ${zwMolding.dayShift} / 夜班 ${zwMolding.nightShift})
+            - 博士廠分佈：${bsMolding.total} 筆 (日班 ${bsMolding.dayShift} / 夜班 ${bsMolding.nightShift})
+            - 異常類型詳情：${JSON.stringify(allIssues)}
+            - 累犯人員名單數：宗瑋廠 ${Object.keys(zwMolding.personnel).length + Object.keys(zwAssy.personnel).length} 人、博士廠 ${Object.keys(bsMolding.personnel).length + Object.keys(bsAssy.personnel).length} 人
+        
+            【輸出規則 (Strict Output Rules)】
+            1. **格式限制**：僅回傳純 HTML 代碼，格式嚴格遵守：<ul><li><b>[策略標題]</b>: 具體執行內容 (約 50-60 字)</li></ul>。
+            2. **內容要求 (針對人為疏失)**：
+               - 第一點針對 **「人員課責 (Accountability)」**：針對數據中的累犯人員或特定班別，提出具體的「鎖定權限」、「公佈名單」或「強制再教育」措施。
+               - 第二點針對 **「作業防錯 (Operational Check)」**：不改系統前提下，如何增加「人為確認」關卡？(例如：上下班交接時的主管覆核、看板紅燈警示)。
+               - 第三點針對 **「績效連動 (KPI Linkage)」**：如何將這些異常數據轉化為工廠的獎懲依據，以提升操作專注度。
+            3. **語氣風格**：嚴肅、直指核心。不要講「建議加強宣導」這種空話，要講「實施」、「執行」、「列入考核」。
+            4. **禁止事項**：嚴禁 Markdown 語法 (如 \`\`\` 或 **)、嚴禁任何開場白或結尾問候。
+        
+            現在，請直接生成 HTML 結果：
+        `;
             // 設定預設模型 (gemini-2.5-flash)
             let modelName = 'gemini-2.5-flash'; 
             
