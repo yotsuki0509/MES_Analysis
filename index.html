@@ -410,7 +410,7 @@
             
             <div id="pdfContentWrapper" class="bg-white p-2">
                 <div id="pdfTitleHeader" style="display:none; text-align:center; padding: 20px 0;">
-                    <h1 style="font-size: 44px; font-weight: bold; margin-bottom: 10px;">MES現場報工異常分析報告</h1>
+                    <h1 style="font-size: 50px; font-weight: bold; margin-bottom: 10px;">MES現場報工異常分析報告</h1>
                     <div style="font-size: 18px; color: #666;" id="pdfDateDisplay"></div>
                 </div>
 
@@ -784,7 +784,7 @@
             const bossData = labels.map(m => monthlyStats[m].boss);
 
             // 修改：加大字體 (原本 14)
-            const commonFont = { size: 20, weight: 'bold', family: "'Inter', sans-serif" };
+            const commonFont = { size: 24, weight: 'bold', family: "'Inter', sans-serif" };
             // 修改：加大標題 (原本 16)
             const titleFont = { size: 24, weight: 'bold' };
             const chartOptions = {
@@ -792,7 +792,7 @@
                 layout: { padding: { bottom: 25, top: 10 } },
                 plugins: { 
                     legend: { position: 'top', labels: { font: commonFont, padding: 20 } },
-                    tooltip: { mode: 'index', intersect: false, titleFont: { size: 14 }, bodyFont: { size: 14 } }
+                    tooltip: { mode: 'index', intersect: false, titleFont: { size: 20 }, bodyFont: { size: 20 } }
                 },
                 scales: { 
                     x: { ticks: { font: commonFont, maxRotation: 45, minRotation: 45 } },
