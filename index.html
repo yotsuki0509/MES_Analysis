@@ -1052,27 +1052,24 @@
             const bsAssy = analysis['博士廠']['組裝'];
 
             const promptText = `
-            你是一位專精於製造業現場改善的資深顧問，擅長運用 **「軟性管理 (Soft Management)」** 與 **「行為推力 (Nudge Theory)」** 來解決人為疏失。
+            你是一位講求效率的現場改善專家。針對工廠 MES 報工異常 (${total}筆)，請給出 3 點「極簡、無廢話」的執行動作。
             
-            目前的工廠環境不適合嚴厲懲罰，我們希望透過「氛圍營造」與「流程微調」來提升報工準確率。
-            請深入分析以下數據，尤其是 **異常類型分佈 (${JSON.stringify(allIssues)})** 與 **日夜班差異**，提供 3 點具體改善建議。
+            【限制條件】
+            1. **絕不懲罰**：嚴禁提到扣錢、記過。
+            2. **字數限制**：每點建議 **嚴格限制在 30 字以內**。
+            3. **禁止解釋**：不要寫「為了...」、「因為...」，直接寫「做什麼」。
+            4. **語氣**：中性、指令式、短促。
         
-            【本月數據戰情】
-            - 總異常：${total} 筆
-            - 宗瑋廠：${zwMolding.total} 筆 (日班 ${zwMolding.dayShift} / 夜班 ${zwMolding.nightShift})
-            - 博士廠：${bsMolding.total} 筆 (日班 ${bsMolding.dayShift} / 夜班 ${bsMolding.nightShift})
-            - 異常類型詳情：${JSON.stringify(allIssues)}
-            - 需關注人員數：宗瑋廠 ${Object.keys(zwMolding.personnel).length + Object.keys(zwAssy.personnel).length} 人、博士廠 ${Object.keys(bsMolding.personnel).length + Object.keys(bsAssy.personnel).length} 人
+            【數據參考】
+            - 異常類型：${JSON.stringify(allIssues)}
+            - 異常分佈：宗瑋廠 ${zwMolding.total} / 博士廠 ${bsMolding.total}
         
-            【輸出規則】
-            1. **格式限制**：僅回傳純 HTML 代碼，格式：<ul><li><b>[策略標題]</b>: 具體內容</li></ul>。
-            2. **核心原則**：嚴禁提及扣薪、懲處或強硬手段。建議必須具備「同理心」與「可行性」。
-            3. **策略方向 (請依此方向自由發揮)**：
-               - 第一點：針對 **「數據可視化與榮譽感」**：請思考如何呈現這些數據（例如公佈欄、早會宣導...等），能讓員工產生「不想上榜」或「爭取榮譽」的自發性動力？
-               - 第二點：針對 **「現場互助機制」**：針對日夜班交接或同儕之間，設計一個不增加太多負擔，但能有效互相提醒的機制。
-               - 第三點：針對 **「高頻異常的針對性解法」**：請直接讀取 JSON 中的主要錯誤類型（例如是數量錯還是工單錯？），針對該特定錯誤提出一個物理上或流程上的防呆小撇步。
-        
-            現在，請發揮你的專業判斷，生成 HTML 結果：
+            【輸出格式 HTML】
+            <ul>
+              <li><b>[動作標題]</b>: [動作內容 (限30字)]</li>
+              <li><b>[動作標題]</b>: [動作內容 (限30字)]</li>
+              <li><b>[動作標題]</b>: [動作內容 (限30字)]</li>
+            </ul>
         `;
             // 設定預設模型 (gemini-2.5-flash)
             let modelName = 'gemini-2.5-flash'; 
