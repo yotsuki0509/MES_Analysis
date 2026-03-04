@@ -1127,8 +1127,7 @@
         }
         
         function generateEditableRecommendations(a, t) {
-            const c = [{f:'宗瑋',s:'夜班',c:zw.nightShift},{f:'宗瑋',s:'日班',c:zw.dayShift},{f:'博士',s:'夜班',c:bs.nightShift},{f:'博士',s:'日班',c:bs.dayShift}].sort((x,y)=>y.c-x.c);
-            const defaultContent = `<div>1. SOP 執行確認：主管應針對**${c[0].f}廠** 的 **${c[0].s}**人員進行現場查核或訓練。</div>
+            const defaultContent = `<div>1. SOP 執行確認：主管應針對異常人員進行現場查核或訓練。</div>
                                     <div>2. 即時回報：系統使用上有問題應第一時間通知，避免流程錯誤。</div>
                                     <div>3. 數量核對：落實每日生產數與實際報工數之比對流程。</div>`;
             return { 
