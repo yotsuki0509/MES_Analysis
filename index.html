@@ -1113,7 +1113,7 @@
 
         function generateMergedShiftTrendAnalysis(a, t, all) {
             const zw = a['宗瑋廠']['成型'], bs = a['博士廠']['成型'], mt = zw.total + bs.total;
-            let res = `**宗瑋廠** 成型部門佔成型總異常 **${mt>0?((zw.total/mt)*100).toFixed(1):0}%**`
+            let res = `**宗瑋廠** 成型部門佔成型總異常 **${mt>0?((zw.total/mt)*100).toFixed(1):0}%**`;
             let res = `**博士廠** 佔 **${mt>0?((bs.total/mt)*100).toFixed(1):0}%**。`;
             const c = [{f:'宗瑋',s:'夜班',c:zw.nightShift},{f:'宗瑋',s:'日班',c:zw.dayShift},{f:'博士',s:'夜班',c:bs.nightShift},{f:'博士',s:'日班',c:bs.dayShift}].sort((x,y)=>y.c-x.c);
             if(c[0].c > 0) res += `<br>結論：其中多數發生於**${c[0].f}廠** 的 **${c[0].s}**。`;
