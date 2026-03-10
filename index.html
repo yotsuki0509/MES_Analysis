@@ -1113,7 +1113,8 @@
 
         function generateMergedShiftTrendAnalysis(a, t, all) {
             const zw = a['宗瑋廠']['成型'], bs = a['博士廠']['成型'], mt = zw.total + bs.total;
-            let res = `**宗瑋廠** 成型部門佔成型總異常 **${mt>0?((zw.total/mt)*100).toFixed(1):0}%**，**博士廠** 佔 **${mt>0?((bs.total/mt)*100).toFixed(1):0}%**。`;
+            let res = `**宗瑋廠** 成型部門佔成型總異常 **${mt>0?((zw.total/mt)*100).toFixed(1):0}%**`
+            let res = `**博士廠** 佔 **${mt>0?((bs.total/mt)*100).toFixed(1):0}%**。`;
             const c = [{f:'宗瑋',s:'夜班',c:zw.nightShift},{f:'宗瑋',s:'日班',c:zw.dayShift},{f:'博士',s:'夜班',c:bs.nightShift},{f:'博士',s:'日班',c:bs.dayShift}].sort((x,y)=>y.c-x.c);
             if(c[0].c > 0) res += `<br>結論：其中多數發生於**${c[0].f}廠** 的 **${c[0].s}**。`;
             const zwT = a['宗瑋廠']['成型'].total + a['宗瑋廠']['組裝'].total, bsT = a['博士廠']['成型'].total + a['博士廠']['組裝'].total;
@@ -1123,7 +1124,7 @@
             const l = all['漏報工']||0, q = all['數量錯誤']||0;
             let cnt = 0; Object.values(a).forEach(f => Object.values(f).forEach(d => cnt += Object.keys(d.personnel).length));
             return { htmlContent: `<p>本期總異常 <b>${t}</b> 次：<b>漏報工</b> (${t>0?((l/t)*100).toFixed(1):0}%)、<b>數量錯誤</b> (${t>0?((q/t)*100).toFixed(1):0}%)。</p><hr style="margin: 15px 0; border-top: 2px solid #e0e7ff;"><p>${cnt > 0 ?
-            `本期共計 <b>${cnt}</b> 位人員發生次數>3次，應加強操作指導。` : "人員報工表現穩定。"}</p>`, isMerged: true };
+            `本期共計 <b>${cnt}</b> 位人員發生次數>3次，應加強操作指導。` : "無特定人員明顯異常。"}</p>`, isMerged: true };
         }
         
         function generateEditableRecommendations(a, t) {
